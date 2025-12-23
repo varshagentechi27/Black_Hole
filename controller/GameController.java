@@ -31,7 +31,7 @@ public class GameController {
         // Announce the players and their colors
         System.out.println(ConsoleColors.BOLD + "PARTICIPATING PLAYERS:" + ConsoleColors.RESET);
         for (Player p : state.players) {
-            String color = ConsoleColors.getPlayerColor(p.getId());
+            String color = ConsoleColors.BOLD+ConsoleColors.getPlayerColor(p.getId());
             String type = p.isComputer() ? " (Computer)" : " (Human)";
             System.out.println(" - Player " + color + p.getName() + ConsoleColors.RESET + type);
         }
@@ -41,17 +41,17 @@ public class GameController {
 
     private void play(GameState state) {
         // Enforce exactly one round
-        System.out.println("\n" + ConsoleColors.YELLOW + "●  ●  ●  THE ONE AND ONLY ROUND BEGINS  ●  ●  ●" + ConsoleColors.RESET + "\n");
+        System.out.println("\n" + ConsoleColors.BOLD+ConsoleColors.YELLOW + "●  ●  ●  THE ROUND BEGINS  ●  ●  ●" + ConsoleColors.RESET + "\n");
         state.turn = 0; 
         state.moveNumber = 1;
 
         while (!state.board.hasOneEmptyLeft()) {
             state.board.print();
             Player p = state.players.get(state.turn);
-            String color = ConsoleColors.getPlayerColor(p.getId());
+            String color = ConsoleColors.BOLD+ConsoleColors.getPlayerColor(p.getId());
             String label = p.getName() + state.moveNumber;
 
-            System.out.println("\n◯ Player " + color + p.getName() + ConsoleColors.RESET + 
+            System.out.println("Player " + color + p.getName() + ConsoleColors.RESET + 
                                " is placing: " + color + "● (" + label + ")" + ConsoleColors.RESET);
 
             if (p.isComputer()) {
@@ -78,7 +78,7 @@ public class GameController {
             int sum = list.stream().mapToInt(Integer::intValue).sum();
             p.addScore(sum);
             String color = ConsoleColors.getPlayerColor(p.getId());
-            System.out.println("◯ Player " + color + p.getName() + ConsoleColors.RESET + " : " + list + " = " + sum);
+            System.out.println("Player " + color + p.getName() + ConsoleColors.RESET + " : " + list + " = " + sum);
         }
 
         // Highlight the Winner
@@ -94,7 +94,7 @@ public class GameController {
     }
 
     private boolean userMove(GameState state, Player p, String label) {
-        String color = ConsoleColors.getPlayerColor(p.getId());
+        String color = ConsoleColors.BOLD+ConsoleColors.getPlayerColor(p.getId());
         System.out.println("Player " + color + p.getName() + ConsoleColors.RESET + ", enter coordinates:");
         int r = view.getInt("Row: ") - 1;
         int c = view.getInt("Position: ") - 1;

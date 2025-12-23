@@ -86,10 +86,10 @@ public class CenteredTriangleBoard {
      */
     public void printLegend() {
         System.out.println(ConsoleColors.BOLD + "\n--- COLOR LEGEND ---" + ConsoleColors.RESET);
-        System.out.println("  ◯      : Empty Cell (Available for placement)");
-        System.out.println(ConsoleColors.CYAN + "  ◖ A1 ◗  : Player Token (Active during placement)" + ConsoleColors.RESET);
-        System.out.println("\u001B[1;37;40m ◖ BH ◗ " + ConsoleColors.RESET + " : The Black Hole (Appears at the end)");
-        System.out.println(ConsoleColors.BOLD + ConsoleColors.CYAN + " ◖A1 ◗ " + ConsoleColors.RESET + "  : Absorbed/Scoring Token (Keeps its color)");
+        System.out.println("  ◯       : Empty Cell (Available for placement)");
+        System.out.println(ConsoleColors.CYAN + " ◖ A1 ◗   : Player Token (Active during placement)" + ConsoleColors.RESET);
+        System.out.println("\u001B[1;37;40m ◖ BH ◗ " + ConsoleColors.RESET + "  : The Black Hole (Appears at the end)");
+        System.out.println(ConsoleColors.BOLD + ConsoleColors.CYAN + " ◖ A1 ◗ " + ConsoleColors.RESET + "  : Absorbed/Scoring Token (Keeps its color)");
         System.out.println("\u001B[1;37m ◖ A5 ◗ " + ConsoleColors.RESET + "  : Safe/Non-Scoring Token (Turns White)");
         System.out.println("--------------------\n");
     }

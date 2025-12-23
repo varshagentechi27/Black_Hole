@@ -15,7 +15,7 @@ public class Main {
             System.out.println("\n" + ConsoleColors.BOLD + ConsoleColors.CYAN + 
                                "●  ●  ●  ●  ●   GAME FINISHED   ●  ●  ●  ●  ●" + ConsoleColors.RESET);
             
-            System.out.print(ConsoleColors.YELLOW + "Would you like to play another round? (Y/N): " + ConsoleColors.RESET);
+            System.out.print(ConsoleColors.GREEN + "Would you like to play another round? (Y/N): " + ConsoleColors.RESET);
             String choice = sc.next().trim().toUpperCase();
 
             while (!choice.equals("Y") && !choice.equals("N")) {

@@ -3,6 +3,9 @@ package model;
 import view.ConsoleColors;
 import java.util.*;
 
+import exception.InvalidMoveException;
+import exception.OccupiedCellException;
+
 public class CenteredTriangleBoard {
 
     private final String[][] board;
@@ -20,11 +23,34 @@ public class CenteredTriangleBoard {
     private boolean valid(int r, int c) {
         return r >= 0 && r < rows && c >= 0 && c <= r;
     }
-
-    public boolean place(int r, int c, String val) {
-        if (!valid(r, c) || board[r][c] != null) return false;
-        board[r][c] = val;
+    
+    public boolean isRowFull(int r) {
+        if (r < 0 || r >= rows) return true;
+        for (int j = 0; j <= r; j++) {
+            if (board[r][j] == null) return false;
+        }
         return true;
+    }
+    
+    public void validateRow(int r) throws InvalidMoveException {
+    	 if (r < 0 || r >= rows) {
+             throw new InvalidMoveException("Invalid Row! Please enter a row from 1 to " + rows + ".");
+         }
+	}
+
+    public void place(int r, int c, String val) throws InvalidMoveException, OccupiedCellException {
+         if (c < 0 || c > r) {
+//             throw new InvalidMoveException("Invalid Position! For Row " + (r + 1) + ", please enter a position from 1 to " + (r + 1) + ".");
+        	 throw new InvalidMoveException("Invalid Position! Please refer to the Position Guide above for valid Positions.");
+        	 
+         }
+
+         // Edge Case: Cell already occupied
+         if (board[r][c] != null) {
+             throw new OccupiedCellException("This cell is already occupied by Player " + board[r][c].charAt(0) + "! Please choose an empty circle (◯).");
+         }
+
+         board[r][c] = val;
     }
 
     public boolean hasOneEmptyLeft() {
@@ -49,16 +75,12 @@ public class CenteredTriangleBoard {
         }
     }
 
-    /**
-     * Identifies cells surrounding the Black Hole to be styled as "absorbed".
-     */
     private void identifyAbsorbedNeighbors() {
         int[][] adj = {
             {bhRow, bhCol - 1}, {bhRow, bhCol + 1},
             {bhRow - 1, bhCol - 1}, {bhRow - 1, bhCol},
             {bhRow + 1, bhCol}, {bhRow + 1, bhCol + 1}
         };
-
         for (int[] p : adj) {
             int r = p[0], c = p[1];
             if (valid(r, c) && board[r][c] != null && !board[r][c].equals("BH")) {
@@ -74,79 +96,54 @@ public class CenteredTriangleBoard {
             {bhRow - 1, bhCol - 1}, {bhRow - 1, bhCol},
             {bhRow + 1, bhCol}, {bhRow + 1, bhCol + 1}
         };
-
         for (int[] p : adj) {
             int r = p[0], c = p[1];
             if (!valid(r, c) || board[r][c] == null || board[r][c].equals("BH")) continue;
-
             String player = board[r][c].substring(0, 1);
             int number = Integer.parseInt(board[r][c].substring(1));
-
             map.putIfAbsent(player, new ArrayList<>());
             map.get(player).add(number);
         }
         return map;
     }
 
-    /**
-     * Formats the cell content into a "Circular Token" style.
-     * BH: Black font, no background.
-     * Absorbed: White font, Black background.
-     */
-    private String formatCell(int r, int c, String content) {
-        if (content == null) {
-            return "   ◯    "; 
-        }
-        
-        // --- Custom Black Hole Style ---
-        if (content.equals("BH")) {
-            // \u001B[30m = Black Foreground
-//            return "\u001B[30m" + " ◖ BH ◗ " + ConsoleColors.RESET;
-            return "\u001B[1;37;40m" + " ◖ BH ◗ " + ConsoleColors.RESET;
-        }
+    public void printLegend() {
+        System.out.println(ConsoleColors.BOLD + "\n--- COLOR LEGEND ---" + ConsoleColors.RESET);
+        System.out.println("    ◯     : Empty Cell (Available for placement)");
+        System.out.println(ConsoleColors.CYAN + " ◖ A1 ◗   : Player Token (Active during placement)" + ConsoleColors.RESET);
+        System.out.println("\u001B[1;37;40m ◖ BH ◗ " + ConsoleColors.RESET + "  : The Black Hole (Appears at the end)");
+        System.out.println(ConsoleColors.BOLD + ConsoleColors.CYAN + " ◖ A1 ◗ " + ConsoleColors.RESET + "  : Absorbed/Scoring Token (Keeps its color)");
+        System.out.println("\u001B[1;37m ◖ A5 ◗ " + ConsoleColors.RESET + "  : Safe/Non-Scoring Token (Turns White)");
+        System.out.println("--------------------\n");
+    }
 
-//        String color;
-//        // Logic for absorbed neighbor cells (scoring cells)
-//        if (absorbedCells.contains(r + "," + c)) {
-//            color = "\u001B[1;37m";
-//           
-//        } else {
-//            char pChar = content.charAt(0);
-//            int pIdx = pChar - 'A';
-//            color = ConsoleColors.BOLD + ConsoleColors.getPlayerColor(pIdx);
-//        }
+    private String formatCell(int r, int c, String content) {
+        if (content == null) return "   ◯    ";
+        if (content.equals("BH")) return "\u001B[1;37;40m" + " ◖ BH ◗ " + ConsoleColors.RESET;
+
         String color;
         char pChar = content.charAt(0);
         int pIdx = pChar - 'A';
         
-        // Check if the Black Hole has been Manifested (placed)
         if (bhRow != -1) {
-            // If the cell is absorbed (next to BH), keep its player color
             if (absorbedCells.contains(r + "," + c)) {
                 color = ConsoleColors.BOLD + ConsoleColors.getPlayerColor(pIdx);
             } else {
-                // All other non-absorbed tokens turn white
-                color = "\u001B[1;37m"; 
+                color = ConsoleColors.WHITE;
             }
         } else {
-            // Game ongoing: Use standard player colors
             color = ConsoleColors.BOLD + ConsoleColors.getPlayerColor(pIdx);
         }
         
-        String inner;
-        if (content.length() == 2) {
-            inner = " " + content + " ";
-        } else {
-            inner = " " + content;
-        }
-        
+        String inner = content.length() == 2 ? " " + content + " " : " " + content;
         return color + " ◖" + inner + "◗ " + ConsoleColors.RESET;
     }
 
     public void printGuide() {
         System.out.println("\n" + ConsoleColors.BOLD + "POSITION GUIDE (Row, Position):" + ConsoleColors.RESET);
         for (int i = 0; i < rows; i++) {
-            System.out.print(" ".repeat((rows - i) * 4));
+            System.out.printf("Row %-2d ", i + 1);
+            System.out.print(" ".repeat((rows - i - 1) * 4));
             for (int j = 0; j <= i; j++) {
                 System.out.printf("[%d,%d]   ", i + 1, j + 1);
             }
@@ -157,6 +154,8 @@ public class CenteredTriangleBoard {
     public void print() {
         System.out.println("\n" + ConsoleColors.BOLD + "--- CURRENT BOARD ---" + ConsoleColors.RESET);
         for (int i = 0; i < rows; i++) {
+            // Row number on the left
+            System.out.printf("Row %-2d ", i + 1);
             System.out.print(" ".repeat((rows - i - 1) * 4));
             for (int j = 0; j <= i; j++) {
                 System.out.print(formatCell(i, j, board[i][j]));
@@ -164,4 +163,6 @@ public class CenteredTriangleBoard {
             System.out.println("\n"); 
         }
     }
+
+	
 }

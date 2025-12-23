@@ -1,6 +1,9 @@
 package view;
 
 import java.util.Scanner;
+import model.CenteredTriangleBoard;
+import model.Player;
+import java.util.*;
 
 public class GameView {
 
@@ -45,5 +48,88 @@ public class GameView {
             System.out.println(ConsoleColors.RED + "   ⚠️ Invalid input! Please enter 'Y' for Yes or 'N' for No." + ConsoleColors.RESET);
         }
     }
-    
+    public void displayMessage(String msg, String color) {
+        System.out.println(color + msg + ConsoleColors.RESET);
+    }
+
+    public void displayLegend() {
+        System.out.println(ConsoleColors.BOLD + "\n--- COLOR LEGEND ---" + ConsoleColors.RESET);
+        System.out.println("    ◯     : Empty Cell (Available for placement)");
+        System.out.println(ConsoleColors.CYAN + " ◖ A1 ◗   : Active Token (Active during placement)" + ConsoleColors.RESET);
+        System.out.println(ConsoleColors.BLACK_HOLE + " ◖ BH ◗ " + ConsoleColors.RESET + "  : The Black Hole (Appears at the end)");
+        System.out.println(ConsoleColors.BOLD + ConsoleColors.CYAN + " ◖ A1 ◗ " + ConsoleColors.RESET + "  : Absorbed Token (Keeps color)");
+        System.out.println(ConsoleColors.WHITE + " ◖ A5 ◗ " + ConsoleColors.RESET + "  : Safe Token (Turns White)");
+        System.out.println("--------------------\n");
+    }
+
+    public void displayGuide(int rows) {
+        System.out.println(ConsoleColors.BOLD + "POSITION GUIDE (Row, Position):" + ConsoleColors.RESET);
+        for (int i = 0; i < rows; i++) {
+            System.out.printf("Row %-2d ", i + 1);
+            System.out.print(" ".repeat((rows - i - 1) * 4));
+            for (int j = 0; j <= i; j++) System.out.printf("[%d,%d]   ", i + 1, j + 1);
+            System.out.println("\n");
+        }
+    }
+
+    public void displayBoard(CenteredTriangleBoard board) {
+        String[][] data = board.getBoardArray();
+        int rows = board.getRows();
+        Set<String> absorbed = board.getAbsorbedCells();
+        int bhRow = board.getBhRow();
+
+        System.out.println("\n" + ConsoleColors.BOLD + "--- CURRENT BOARD ---" + ConsoleColors.RESET);
+        for (int i = 0; i < rows; i++) {
+            System.out.printf("Row %-2d ", i + 1);
+            System.out.print(" ".repeat((rows - i - 1) * 4));
+            for (int j = 0; j <= i; j++) {
+                System.out.print(formatCell(i, j, data[i][j], absorbed, bhRow));
+            }
+            System.out.println("\n");
+        }
+    }
+
+    private String formatCell(int r, int c, String content, Set<String> absorbed, int bhRow) {
+        if (content == null) return "   ◯    ";
+        if (content.equals("BH")) return ConsoleColors.BLACK_HOLE + " ◖ BH ◗ " + ConsoleColors.RESET;
+
+        String color;
+        int pIdx = content.charAt(0) - 'A';
+        if (bhRow != -1) {
+            color = absorbed.contains(r + "," + c) ? ConsoleColors.BOLD + ConsoleColors.getPlayerColor(pIdx) : ConsoleColors.WHITE;
+        } else {
+            color = ConsoleColors.BOLD + ConsoleColors.getPlayerColor(pIdx);
+        }
+        String inner = content.length() == 2 ? " " + content + " " : " " + content;
+        return color + " ◖" + inner + "◗ " + ConsoleColors.RESET;
+    }
+
+    public void displayScoreboard(List<Player> players, Map<String, List<Integer>> scoreMap) {
+        System.out.println("\n" + ConsoleColors.BOLD + "--- FINAL SCOREBOARD ---" + ConsoleColors.RESET);
+        for (Player p : players) {
+            List<Integer> list = scoreMap.getOrDefault(p.getName(), List.of());
+            int sum = list.stream().mapToInt(Integer::intValue).sum();
+            String color = ConsoleColors.getPlayerColor(p.getId());
+            System.out.println("Player " + color + p.getName() + ConsoleColors.RESET + " : " + list + " = " + sum);
+        }
+    }
+
+    public void displayWinner(List<Player> winners) {
+        if (winners.size() > 1) {
+            System.out.println("\n" + ConsoleColors.BOLD + ConsoleColors.CYAN + "╔══════════════════════════════════════════════╗");
+            System.out.print("║   " + "\u001B[7m" + "  🤝 IT'S A DRAW BETWEEN: ");
+            for (int i = 0; i < winners.size(); i++) {
+                System.out.print(winners.get(i).getName() + (i < winners.size() - 1 ? ", " : ""));
+            }
+            System.out.println("  🤝  " + ConsoleColors.RESET + ConsoleColors.CYAN + "   ║\n" + "╚══════════════════════════════════════════════╝" + ConsoleColors.RESET);
+        } else {
+            Player winner = winners.get(0);
+            String winColor = ConsoleColors.getPlayerColor(winner.getId());
+            System.out.println("\n" + winColor + "╔══════════════════════════════════════════════╗");
+            System.out.println("║                                              ║");
+            System.out.println("║   " + "\u001B[7m" + " 🏆 PLAYER " + winner.getName() + " WINS THE GAME!! 🏆  " + ConsoleColors.RESET + winColor + "   ║");
+            System.out.println("║                                              ║");
+            System.out.println("╚══════════════════════════════════════════════╝" + ConsoleColors.RESET);
+        }
+    }
 }

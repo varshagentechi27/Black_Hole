@@ -3,9 +3,7 @@ package controller;
 import model.*;
 import view.GameView;
 import view.ConsoleColors;
-import exception.InvalidPlayerCountException;
-import exception.InvalidMoveException;
-import exception.OccupiedCellException;
+import exception.*;
 import java.util.*;
 
 public class GameController {
@@ -26,128 +24,93 @@ public class GameController {
 
         GameState state = new GameState(players, new CenteredTriangleBoard(rows), 10);
         
-        state.board.printLegend();
-        state.board.printGuide();
+        view.displayLegend();
+        view.displayGuide(rows);
 
-        System.out.println(ConsoleColors.BOLD + "PARTICIPATING PLAYERS:" + ConsoleColors.RESET);
+        view.displayMessage("PARTICIPATING PLAYERS:", ConsoleColors.BOLD);
         for (Player p : state.players) {
             String color = ConsoleColors.BOLD + ConsoleColors.getPlayerColor(p.getId());
             String type = p.isComputer() ? " (Computer)" : " (Human)";
-            System.out.println(" - Player " + color + p.getName() + ConsoleColors.RESET + type);
+            view.displayMessage("- Player " + color + p.getName() + ConsoleColors.RESET + type, "");
         }
         
         play(state);
     }
 
-	private void play(GameState state) {
-		System.out.println("\n" + ConsoleColors.BOLD + ConsoleColors.YELLOW + "●  ●  ●  THE ROUND BEGINS  ●  ●  ●"
-				+ ConsoleColors.RESET + "\n");
-		state.turn = 0;
-		state.moveNumber = 1;
+    private void play(GameState state) {
+        view.displayMessage("\n●  ●  ●  THE ROUND BEGINS  ●  ●  ●\n", ConsoleColors.BOLD + ConsoleColors.YELLOW);
+        state.turn = 0; 
+        state.moveNumber = 1;
 
-		while (!state.board.hasOneEmptyLeft()) {
-			state.board.print();
-			Player p = state.players.get(state.turn);
-			String color = ConsoleColors.BOLD + ConsoleColors.getPlayerColor(p.getId());
-			String label = p.getName() + state.moveNumber;
+        while (!state.board.hasOneEmptyLeft()) {
+            view.displayBoard(state.board);
+            Player p = state.players.get(state.turn);
+            String color = ConsoleColors.BOLD + ConsoleColors.getPlayerColor(p.getId());
+            String label = p.getName() + state.moveNumber;
 
-			System.out.println("Player " + color + p.getName() + ConsoleColors.RESET + " is placing: " + color + "● ("
-					+ label + ")" + ConsoleColors.RESET);
+            view.displayMessage("Player " + color + p.getName() + ConsoleColors.RESET + 
+                               " is placing: " + color + "● (" + label + ")", "");
 
-			if (p.isComputer()) {
-				try {
-					Thread.sleep(700);
-				} catch (Exception e) {
-				}
-				autoMove(state, label);
-			} else {
-				boolean moveSuccess = false;
-				while (!moveSuccess) {
-					try {
-						int r = view.getInt("Row: ") - 1;
-						state.board.validateRow(r);
+            if (p.isComputer()) {
+                try { Thread.sleep(700); } catch (Exception ignored) {}
+                autoMove(state.board, label);
+            } else {
+                handleUserTurn(state.board, label);
+            }
+            
+            state.nextMoveCycle();
+            state.turn = (state.turn + 1) % state.players.size();
+        }
 
-						if (state.board.isRowFull(r)) {
-							System.out.println(ConsoleColors.RED + "   ❌ Row " + (r + 1)
-									+ " is completely full! Please enter the another Row."
-									+ ConsoleColors.RESET);
-							continue;
-						}
+        state.board.placeBlackHole();
+        view.displayBoard(state.board);
+        view.displayMessage("\n●  ●  ●  THE BLACK HOLE HAS ARRIVED  ●  ●  ●", ConsoleColors.BLACK_HOLE);
 
-						int c = view.getInt("Position: ") - 1;
-						state.board.place(r, c, label);
-						moveSuccess = true;
+        Map<String, List<Integer>> scoreMap = state.board.calculateScores();
+        for (Player p : state.players) {
+            List<Integer> list = scoreMap.getOrDefault(p.getName(), List.of());
+            p.addScore(list.stream().mapToInt(Integer::intValue).sum());
+        }
+        view.displayScoreboard(state.players, scoreMap);
+        
+        // Find winners
+        state.players.sort(Comparator.comparingInt(Player::getTotalScore));
+        int minScore = state.players.get(0).getTotalScore();
+        List<Player> winners = new ArrayList<>();
+        for (Player p : state.players) if (p.getTotalScore() == minScore) winners.add(p);
+        
+        view.displayWinner(winners);
+    }
 
-					} catch (InvalidMoveException | OccupiedCellException e) {
-						System.out.println(ConsoleColors.RED + "   ❌ " + e.getMessage() + ConsoleColors.RESET);
-						System.out.println("Please enter both Row and Position again.");
-					}
-				}
-			}
-
-			state.nextMoveCycle();
-			state.turn = (state.turn + 1) % state.players.size();
-		}
-
-		state.board.placeBlackHole();
-		state.board.print();
-		System.out.println(
-				"\n" + "\u001B[1;37;40m" + " ●  ●  ●  THE BLACK HOLE HAS ARRIVED  ●  ●  ● " + ConsoleColors.RESET);
-
-		Map<String, List<Integer>> scoreMap = state.board.calculateScores();
-		System.out.println("\n" + ConsoleColors.BOLD + "--- FINAL SCOREBOARD ---" + ConsoleColors.RESET);
-
-		for (Player p : state.players) {
-			List<Integer> list = scoreMap.getOrDefault(p.getName(), List.of());
-			int sum = list.stream().mapToInt(Integer::intValue).sum();
-			p.addScore(sum);
-			String color = ConsoleColors.getPlayerColor(p.getId());
-			System.out.println("Player " + color + p.getName() + ConsoleColors.RESET + " : " + list + " = " + sum);
-		}
-
-		// Winner Calculation with Draw Logic
-		state.players.sort(Comparator.comparingInt(Player::getTotalScore));
-		int winningScore = state.players.get(0).getTotalScore();
-
-		List<Player> winners = new ArrayList<>();
-		for (Player p : state.players) {
-			if (p.getTotalScore() == winningScore) {
-				winners.add(p);
-			}
-		}
-
-		if (winners.size() > 1) {
-			// Draw Message
-			System.out.println("\n" + ConsoleColors.BOLD + ConsoleColors.CYAN
-					+ "╔══════════════════════════════════════════════╗");
-			System.out.print("║   " + "\u001B[7m" + "  🤝 IT'S A DRAW BETWEEN: ");
-			for (int i = 0; i < winners.size(); i++) {
-				Player w = winners.get(i);
-				System.out.print(w.getName() + (i < winners.size() - 1 ? ", " : ""));
-			}
-			System.out.println("  🤝  " + ConsoleColors.RESET + ConsoleColors.CYAN + "   ║\n"
-					+ "╚══════════════════════════════════════════════╝" + ConsoleColors.RESET);
-		} else {
-
-			// Display Champion Box for single winner
-			Player winner = winners.get(0);
-			String winColor = ConsoleColors.getPlayerColor(winner.getId());
-			System.out.println("\n" + winColor + "╔══════════════════════════════════════════════╗");
-			System.out.println("║                                              ║");
-			System.out.println("║   " + "\u001B[7m" + " 🏆 PLAYER " + winner.getName() + " WINS THE GAME!! 🏆  "
-					+ ConsoleColors.RESET + winColor + "   ║");
-			System.out.println("║                                              ║");
-			System.out.println("╚══════════════════════════════════════════════╝" + ConsoleColors.RESET);
-		}
-	}
-
-    private void autoMove(GameState state, String label) {
-        while (true) {
+    private void handleUserTurn(CenteredTriangleBoard board, String label) {
+        boolean success = false;
+        while (!success) {
             try {
-                int r = rand.nextInt(state.board.getRows());
-                int c = rand.nextInt(r + 1);
-                state.board.place(r, c, label);
-                System.out.println("Computer chose: (" + (r + 1) + "," + (c + 1) + ")");
+                int r = view.getInt("Row: ") - 1;
+                board.validateRow(r);
+                if (board.isRowFull(r)) {
+                    view.displayMessage("❌ Row " + (r + 1) + " is full! Please refer to the Position Guide.", ConsoleColors.RED);
+                    continue;
+                }
+                int c = view.getInt("Position: ") - 1;
+                board.place(r, c, label);
+                success = true;
+            } catch (InvalidMoveException e) {
+                view.displayMessage("❌ " + e.getMessage(), ConsoleColors.RED);
+            } catch (OccupiedCellException e) {
+                // e.getMessage() returns the raw player ID (e.g. "B")
+                view.displayMessage("❌ Occupied by Player " + e.getMessage() + "! Pick another coordinate.", ConsoleColors.RED);
+            }
+        }
+    }
+
+    private void autoMove(CenteredTriangleBoard board, String label) {
+        while (true) {
+            int r = rand.nextInt(board.getRows());
+            int c = rand.nextInt(r + 1);
+            try {
+                board.place(r, c, label);
+                view.displayMessage("Computer chose: (" + (r + 1) + "," + (c + 1) + ")", "");
                 break;
             } catch (Exception ignored) {}
         }

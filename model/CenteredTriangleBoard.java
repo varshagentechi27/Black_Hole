@@ -19,7 +19,10 @@ public class CenteredTriangleBoard {
     }
 
     public int getRows() { return rows; }
-
+    public String[][] getBoardArray() { return board; }
+    public int getBhRow() { return bhRow; }
+    public Set<String> getAbsorbedCells() { return absorbedCells; }
+    
     private boolean valid(int r, int c) {
         return r >= 0 && r < rows && c >= 0 && c <= r;
     }
@@ -107,62 +110,6 @@ public class CenteredTriangleBoard {
         return map;
     }
 
-    public void printLegend() {
-        System.out.println(ConsoleColors.BOLD + "\n--- COLOR LEGEND ---" + ConsoleColors.RESET);
-        System.out.println("    ◯     : Empty Cell (Available for placement)");
-        System.out.println(ConsoleColors.CYAN + " ◖ A1 ◗   : Player Token (Active during placement)" + ConsoleColors.RESET);
-        System.out.println("\u001B[1;37;40m ◖ BH ◗ " + ConsoleColors.RESET + "  : The Black Hole (Appears at the end)");
-        System.out.println(ConsoleColors.BOLD + ConsoleColors.CYAN + " ◖ A1 ◗ " + ConsoleColors.RESET + "  : Absorbed/Scoring Token (Keeps its color)");
-        System.out.println("\u001B[1;37m ◖ A5 ◗ " + ConsoleColors.RESET + "  : Safe/Non-Scoring Token (Turns White)");
-        System.out.println("--------------------\n");
-    }
-
-    private String formatCell(int r, int c, String content) {
-        if (content == null) return "   ◯    ";
-        if (content.equals("BH")) return "\u001B[1;37;40m" + " ◖ BH ◗ " + ConsoleColors.RESET;
-
-        String color;
-        char pChar = content.charAt(0);
-        int pIdx = pChar - 'A';
-        
-        if (bhRow != -1) {
-            if (absorbedCells.contains(r + "," + c)) {
-                color = ConsoleColors.BOLD + ConsoleColors.getPlayerColor(pIdx);
-            } else {
-                color = ConsoleColors.WHITE;
-            }
-        } else {
-            color = ConsoleColors.BOLD + ConsoleColors.getPlayerColor(pIdx);
-        }
-        
-        String inner = content.length() == 2 ? " " + content + " " : " " + content;
-        return color + " ◖" + inner + "◗ " + ConsoleColors.RESET;
-    }
-
-    public void printGuide() {
-        System.out.println("\n" + ConsoleColors.BOLD + "POSITION GUIDE (Row, Position):" + ConsoleColors.RESET);
-        for (int i = 0; i < rows; i++) {
-            System.out.printf("Row %-2d ", i + 1);
-            System.out.print(" ".repeat((rows - i - 1) * 4));
-            for (int j = 0; j <= i; j++) {
-                System.out.printf("[%d,%d]   ", i + 1, j + 1);
-            }
-            System.out.println("\n");
-        }
-    }
-
-    public void print() {
-        System.out.println("\n" + ConsoleColors.BOLD + "--- CURRENT BOARD ---" + ConsoleColors.RESET);
-        for (int i = 0; i < rows; i++) {
-            // Row number on the left
-            System.out.printf("Row %-2d ", i + 1);
-            System.out.print(" ".repeat((rows - i - 1) * 4));
-            for (int j = 0; j <= i; j++) {
-                System.out.print(formatCell(i, j, board[i][j]));
-            }
-            System.out.println("\n"); 
-        }
-    }
-
+  
 	
 }

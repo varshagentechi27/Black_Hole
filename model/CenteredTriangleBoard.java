@@ -1,6 +1,4 @@
 package model;
-
-import view.ConsoleColors;
 import java.util.*;
 
 import exception.InvalidMoveException;

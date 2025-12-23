@@ -111,7 +111,7 @@ public class GameView {
         String color;
         int pIdx = content.charAt(0) - 'A';
         if (bhRow != -1) {
-            color = absorbed.contains(r + "," + c) ? ConsoleColors.BOLD + ConsoleColors.getPlayerColor(pIdx) : ConsoleColors.WHITE;
+            color = absorbed.contains(r + "," + c) ? ConsoleColors.BOLD + ConsoleColors.getPlayerColor(pIdx) : ConsoleColors.BOLD + ConsoleColors.WHITE;
         } else {
             color = ConsoleColors.BOLD + ConsoleColors.getPlayerColor(pIdx);
         }

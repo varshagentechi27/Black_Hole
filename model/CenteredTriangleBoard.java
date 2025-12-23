@@ -3,6 +3,9 @@ package model;
 import view.ConsoleColors;
 import java.util.*;
 
+import exception.InvalidMoveException;
+import exception.OccupiedCellException;
+
 public class CenteredTriangleBoard {
 
     private final String[][] board;
@@ -20,11 +23,34 @@ public class CenteredTriangleBoard {
     private boolean valid(int r, int c) {
         return r >= 0 && r < rows && c >= 0 && c <= r;
     }
-
-    public boolean place(int r, int c, String val) {
-        if (!valid(r, c) || board[r][c] != null) return false;
-        board[r][c] = val;
+    
+    public boolean isRowFull(int r) {
+        if (r < 0 || r >= rows) return true;
+        for (int j = 0; j <= r; j++) {
+            if (board[r][j] == null) return false;
+        }
         return true;
+    }
+    
+    public void validateRow(int r) throws InvalidMoveException {
+    	 if (r < 0 || r >= rows) {
+             throw new InvalidMoveException("Invalid Row! Please enter a row from 1 to " + rows + ".");
+         }
+	}
+
+    public void place(int r, int c, String val) throws InvalidMoveException, OccupiedCellException {
+         if (c < 0 || c > r) {
+//             throw new InvalidMoveException("Invalid Position! For Row " + (r + 1) + ", please enter a position from 1 to " + (r + 1) + ".");
+        	 throw new InvalidMoveException("Invalid Position! Please refer to the Position Guide above for valid Positions.");
+        	 
+         }
+
+         // Edge Case: Cell already occupied
+         if (board[r][c] != null) {
+             throw new OccupiedCellException("This cell is already occupied by Player " + board[r][c].charAt(0) + "! Please choose an empty circle (◯).");
+         }
+
+         board[r][c] = val;
     }
 
     public boolean hasOneEmptyLeft() {
@@ -81,12 +107,9 @@ public class CenteredTriangleBoard {
         return map;
     }
 
-    /**
-     * Explains what the colors and icons represent.
-     */
     public void printLegend() {
         System.out.println(ConsoleColors.BOLD + "\n--- COLOR LEGEND ---" + ConsoleColors.RESET);
-        System.out.println("  ◯       : Empty Cell (Available for placement)");
+        System.out.println("    ◯     : Empty Cell (Available for placement)");
         System.out.println(ConsoleColors.CYAN + " ◖ A1 ◗   : Player Token (Active during placement)" + ConsoleColors.RESET);
         System.out.println("\u001B[1;37;40m ◖ BH ◗ " + ConsoleColors.RESET + "  : The Black Hole (Appears at the end)");
         System.out.println(ConsoleColors.BOLD + ConsoleColors.CYAN + " ◖ A1 ◗ " + ConsoleColors.RESET + "  : Absorbed/Scoring Token (Keeps its color)");
@@ -106,7 +129,7 @@ public class CenteredTriangleBoard {
             if (absorbedCells.contains(r + "," + c)) {
                 color = ConsoleColors.BOLD + ConsoleColors.getPlayerColor(pIdx);
             } else {
-                color = "\u001B[1;37m"; // Turn White
+                color = ConsoleColors.WHITE;
             }
         } else {
             color = ConsoleColors.BOLD + ConsoleColors.getPlayerColor(pIdx);
@@ -140,4 +163,6 @@ public class CenteredTriangleBoard {
             System.out.println("\n"); 
         }
     }
+
+	
 }

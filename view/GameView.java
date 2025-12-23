@@ -2,10 +2,6 @@ package view;
 
 import java.util.Scanner;
 
-/**
- * Handles the visual presentation and user prompts for the game.
- * Updated to reflect the 1-round rules and color-coded mechanics.
- */
 public class GameView {
 
     private final Scanner sc = new Scanner(System.in);
@@ -30,30 +26,24 @@ public class GameView {
         System.out.println("7. The player with the " + ConsoleColors.GREEN + "LOWEST" + ConsoleColors.RESET + " total score wins the match!\n");
     }
 
-    /**
-     * Prompts the user for a number with validation.
-     * @param msg The message to display.
-     * @return The integer entered by the user.
-     */
     public int getInt(String msg) {
         System.out.print(ConsoleColors.BOLD + msg + ConsoleColors.RESET);
         while (!sc.hasNextInt()) {
-            sc.next(); // Clear invalid input
-            System.out.print(ConsoleColors.RED + "❌ Enter a valid number: " + ConsoleColors.RESET);
+        	String invalid = sc.next(); // invalid input
+            System.out.println(ConsoleColors.RED + "   ❌ '" + invalid + "' is not a number! Please enter a valid numeric value." + ConsoleColors.RESET);
         }
         return sc.nextInt();
     }
-
-    /**
-     * Simple helper for any single digit requirements if needed.
-     */
-    public int getSingleDigit(String msg) {
-        System.out.print(ConsoleColors.BOLD + msg + ConsoleColors.RESET);
-        String input = sc.next();
-        if (!input.matches("[0-9]+")) {
-            System.out.println(ConsoleColors.RED + "❌ Please enter a numeric value." + ConsoleColors.RESET);
-            return -1;
+    
+    public String getYesNo(String msg) {
+        while (true) {
+            System.out.print(ConsoleColors.YELLOW + msg + ConsoleColors.RESET);
+            String input = sc.next().trim().toUpperCase();
+            if (input.equals("Y") || input.equals("N")) {
+                return input;
+            }
+            System.out.println(ConsoleColors.RED + "   ⚠️ Invalid input! Please enter 'Y' for Yes or 'N' for No." + ConsoleColors.RESET);
         }
-        return Integer.parseInt(input);
     }
+    
 }

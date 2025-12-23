@@ -1,31 +1,27 @@
-import java.util.Scanner;
-import view.ConsoleColors;
 import view.GameView;
+import controller.GameController;
 
 public class Main {
     public static void main(String[] args) {
-    	GameView view = new GameView();
-        Scanner sc = new Scanner(System.in);
+        GameView view = new GameView();
 
         while (true) {
             try {
-                new controller.GameController().start();
+                new GameController().start();
             } catch (Exception e) {
-                System.out.println(ConsoleColors.RED + "   ❌ Error: " + e.getMessage() + ConsoleColors.RESET);
+                view.displayError("Fatal Error: " + e.getMessage());
             }
 
-            System.out.println("\n" + ConsoleColors.BOLD + ConsoleColors.CYAN + 
-                               "●  ●  ●  ●  ●   GAME FINISHED   ●  ●  ●  ●  ●" + ConsoleColors.RESET);
+            view.displayRoundOver("\n●  ●  ●  ●  ●   GAME FINISHED   ●  ●  ●  ●  ●");
             
-            String choice = view.getYesNo(ConsoleColors.GREEN + "Would you like to play another round? (Y/N): " + ConsoleColors.RESET);
-            
+            String choice = view.getYesNo("Would you like to play another round? (Y/N): ");
 
             if (choice.equals("N")) {
-                System.out.println("\n" + ConsoleColors.CYAN + "Thank you for playing BLACK HOLE! ● See you next time! ●" + ConsoleColors.RESET);
+                view.displayStatus("\nThank you for playing BLACK HOLE! ● See you next time! ●");
                 break;
             }
             
-            System.out.println("\n" + ConsoleColors.GREEN + "♻️  Resetting board... Getting ready for a new game!" + ConsoleColors.RESET + "\n");
+            view.displayStatus("\n♻️  Resetting board... Getting ready for a new game!\n");
         }
     }
 }

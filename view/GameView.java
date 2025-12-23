@@ -17,7 +17,41 @@ public class GameView {
         System.out.println("• " + ConsoleColors.GREEN + "Goal: Have the LOWEST score" + ConsoleColors.RESET + "\n");
         howToPlay();
     }
-
+    
+    public void displayRoundStart() {
+        System.out.println("\n" + ConsoleColors.BOLD + ConsoleColors.YELLOW + "●  ●  ●  THE ROUND BEGINS  ●  ●  ●" + ConsoleColors.RESET + "\n");
+    }
+    
+    public void displayRoundOver(String msg) {
+    	 System.out.println("\n" + ConsoleColors.BOLD + ConsoleColors.CYAN+ msg+ ConsoleColors.RESET + "\n");
+    }
+    
+    public void displayPlayerList(List<Player> players) {
+        System.out.println(ConsoleColors.BOLD + "PARTICIPATING PLAYERS:" + ConsoleColors.RESET);
+        for (Player p : players) {
+            String color = ConsoleColors.BOLD + ConsoleColors.getPlayerColor(p.getId());
+            String type = p.isComputer() ? " (Computer)" : " (Human)";
+            System.out.println(" - Player " + color + p.getName() + ConsoleColors.RESET + type);
+        }
+    }
+    
+    public void displayError(String msg) {
+        System.out.println(ConsoleColors.RED + "   ❌ " + msg + ConsoleColors.RESET);
+    }
+    
+    public void displayTurn(Player p, String label) {
+        String color = ConsoleColors.BOLD + ConsoleColors.getPlayerColor(p.getId());
+        System.out.println("Player " + color + p.getName() + ConsoleColors.RESET + 
+                           " is placing: " + color + "● (" + label + ")" + ConsoleColors.RESET);
+    }
+    
+    public void displayStatus(String msg) {
+        System.out.println(ConsoleColors.GREEN+ msg + ConsoleColors.RESET);
+    }
+    
+    public void display(String msg) {
+    	System.out.println(msg);
+    }
     private void howToPlay() {
         System.out.println(ConsoleColors.BOLD + "HOW TO PLAY:" + ConsoleColors.RESET);
         System.out.println(ConsoleColors.WHITE + "1. The board is a " + ConsoleColors.BOLD + "Centered Triangle" + ConsoleColors.RESET + " of empty circles " + ConsoleColors.WHITE + "(◯).");
@@ -29,27 +63,8 @@ public class GameView {
         System.out.println("7. The player with the " + ConsoleColors.GREEN + "LOWEST" + ConsoleColors.RESET + " total score wins the match!\n");
     }
 
-    public int getInt(String msg) {
-        System.out.print(ConsoleColors.BOLD + msg + ConsoleColors.RESET);
-        while (!sc.hasNextInt()) {
-        	String invalid = sc.next(); // invalid input
-            System.out.println(ConsoleColors.RED + "   ❌ '" + invalid + "' is not a number! Please enter a valid numeric value." + ConsoleColors.RESET);
-        }
-        return sc.nextInt();
-    }
-    
-    public String getYesNo(String msg) {
-        while (true) {
-            System.out.print(ConsoleColors.YELLOW + msg + ConsoleColors.RESET);
-            String input = sc.next().trim().toUpperCase();
-            if (input.equals("Y") || input.equals("N")) {
-                return input;
-            }
-            System.out.println(ConsoleColors.RED + "   ⚠️ Invalid input! Please enter 'Y' for Yes or 'N' for No." + ConsoleColors.RESET);
-        }
-    }
-    public void displayMessage(String msg, String color) {
-        System.out.println(color + msg + ConsoleColors.RESET);
+    public void displayMessage(String msg) {
+        System.out.println(ConsoleColors.BLACK_HOLE + msg + ConsoleColors.RESET);
     }
 
     public void displayLegend() {
@@ -105,7 +120,7 @@ public class GameView {
     }
 
     public void displayScoreboard(List<Player> players, Map<String, List<Integer>> scoreMap) {
-        System.out.println("\n" + ConsoleColors.BOLD + "--- FINAL SCOREBOARD ---" + ConsoleColors.RESET);
+        System.out.println("\n" + ConsoleColors.BOLD + ConsoleColors.WHITE+ "--- FINAL SCOREBOARD ---");
         for (Player p : players) {
             List<Integer> list = scoreMap.getOrDefault(p.getName(), List.of());
             int sum = list.stream().mapToInt(Integer::intValue).sum();
@@ -130,6 +145,26 @@ public class GameView {
             System.out.println("║   " + "\u001B[7m" + " 🏆 PLAYER " + winner.getName() + " WINS THE GAME!! 🏆  " + ConsoleColors.RESET + winColor + "   ║");
             System.out.println("║                                              ║");
             System.out.println("╚══════════════════════════════════════════════╝" + ConsoleColors.RESET);
+        }
+    }
+    
+    public int getInt(String msg) {
+        System.out.print(ConsoleColors.BOLD + msg + ConsoleColors.RESET);
+        while (!sc.hasNextInt()) {
+        	String invalid = sc.next(); // invalid input
+            System.out.println(ConsoleColors.RED + "   ❌ '" + invalid + "' is not a number! Please enter a valid numeric value." + ConsoleColors.RESET);
+        }
+        return sc.nextInt();
+    }
+    
+    public String getYesNo(String msg) {
+        while (true) {
+            System.out.print(ConsoleColors.GREEN + msg + ConsoleColors.RESET);
+            String input = sc.next().trim().toUpperCase();
+            if (input.equals("Y") || input.equals("N")) {
+                return input;
+            }
+            System.out.println(ConsoleColors.RED + "   ⚠️ Invalid input! Please enter 'Y' for Yes or 'N' for No." + ConsoleColors.RESET);
         }
     }
 }

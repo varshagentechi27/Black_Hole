@@ -2,7 +2,6 @@ package controller;
 
 import model.*;
 import view.GameView;
-import view.ConsoleColors;
 import exception.*;
 import java.util.*;
 
@@ -27,29 +26,31 @@ public class GameController {
         view.displayLegend();
         view.displayGuide(rows);
 
-        view.displayMessage("PARTICIPATING PLAYERS:", ConsoleColors.BOLD);
-        for (Player p : state.players) {
-            String color = ConsoleColors.BOLD + ConsoleColors.getPlayerColor(p.getId());
-            String type = p.isComputer() ? " (Computer)" : " (Human)";
-            view.displayMessage("- Player " + color + p.getName() + ConsoleColors.RESET + type, "");
-        }
+//        view.displayMessage("PARTICIPATING PLAYERS:", ConsoleColors.BOLD);
+//        for (Player p : state.players) {
+//            String color = ConsoleColors.BOLD + ConsoleColors.getPlayerColor(p.getId());
+//            String type = p.isComputer() ? " (Computer)" : " (Human)";
+//            view.displayMessage("- Player " + color + p.getName() + ConsoleColors.RESET + type, "");
+//        }
+        view.displayPlayerList(state.players);
         
         play(state);
     }
 
     private void play(GameState state) {
-        view.displayMessage("\n●  ●  ●  THE ROUND BEGINS  ●  ●  ●\n", ConsoleColors.BOLD + ConsoleColors.YELLOW);
+//        view.displayMessage("\n●  ●  ●  THE ROUND BEGINS  ●  ●  ●\n", ConsoleColors.BOLD + ConsoleColors.YELLOW);
+        view.displayRoundStart();
         state.turn = 0; 
         state.moveNumber = 1;
 
         while (!state.board.hasOneEmptyLeft()) {
             view.displayBoard(state.board);
             Player p = state.players.get(state.turn);
-            String color = ConsoleColors.BOLD + ConsoleColors.getPlayerColor(p.getId());
+//            String color = ConsoleColors.BOLD + ConsoleColors.getPlayerColor(p.getId());
             String label = p.getName() + state.moveNumber;
 
-            view.displayMessage("Player " + color + p.getName() + ConsoleColors.RESET + 
-                               " is placing: " + color + "● (" + label + ")", "");
+            view.displayTurn(p, label);
+            
 
             if (p.isComputer()) {
                 try { Thread.sleep(700); } catch (Exception ignored) {}
@@ -64,7 +65,7 @@ public class GameController {
 
         state.board.placeBlackHole();
         view.displayBoard(state.board);
-        view.displayMessage("\n●  ●  ●  THE BLACK HOLE HAS ARRIVED  ●  ●  ●", ConsoleColors.BLACK_HOLE);
+        view.displayMessage("\n●  ●  ●  THE BLACK HOLE HAS ARRIVED  ●  ●  ●");
 
         Map<String, List<Integer>> scoreMap = state.board.calculateScores();
         for (Player p : state.players) {
@@ -89,17 +90,17 @@ public class GameController {
                 int r = view.getInt("Row: ") - 1;
                 board.validateRow(r);
                 if (board.isRowFull(r)) {
-                    view.displayMessage("❌ Row " + (r + 1) + " is full! Please refer to the Position Guide.", ConsoleColors.RED);
+                    view.displayError("Row " + (r + 1) + " is full! Please enter another Row number.");
                     continue;
                 }
                 int c = view.getInt("Position: ") - 1;
                 board.place(r, c, label);
                 success = true;
             } catch (InvalidMoveException e) {
-                view.displayMessage("❌ " + e.getMessage(), ConsoleColors.RED);
+                view.displayError(e.getMessage());
             } catch (OccupiedCellException e) {
                 // e.getMessage() returns the raw player ID (e.g. "B")
-                view.displayMessage("❌ Occupied by Player " + e.getMessage() + "! Pick another coordinate.", ConsoleColors.RED);
+                view.displayError("Occupied by Player " + e.getMessage());
             }
         }
     }
@@ -110,7 +111,7 @@ public class GameController {
             int c = rand.nextInt(r + 1);
             try {
                 board.place(r, c, label);
-                view.displayMessage("Computer chose: (" + (r + 1) + "," + (c + 1) + ")", "");
+                view.display("Computer chose: (" + (r + 1) + "," + (c + 1) + ")");
                 break;
             } catch (Exception ignored) {}
         }

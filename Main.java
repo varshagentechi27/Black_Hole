@@ -12,7 +12,7 @@ public class Main {
                 view.displayError("Fatal Error: " + e.getMessage());
             }
 
-            view.displayRoundOver("\n●  ●  ●  ●  ●   GAME FINISHED   ●  ●  ●  ●  ●");
+            view.displayRoundOver();
             
             String choice = view.getYesNo("Would you like to play another round? (Y/N): ");
 

@@ -64,7 +64,7 @@ public class GameView {
         System.out.println("7. The player with the " + ConsoleColors.GREEN + "LOWEST" + ConsoleColors.RESET + " total score wins the match!\n");
     }
 
-    public void displayMessage(String msg) {
+    public void displayBlackHoleMessage(String msg) {
         System.out.println(ConsoleColors.BLACK_HOLE + msg + ConsoleColors.RESET);
     }
 

@@ -61,14 +61,7 @@ public class GameController {
 
 		state.getBoard().placeBlackHole();
 		view.displayBoard(state.getBoard());
-		view.displayMessage("\n●  ●  ●  THE BLACK HOLE HAS FORMED ●  ●  ●");
-		
-		Map<String, List<Integer>> scoreMap = state.getBoard().calculateScores();
-		for (Player p : state.getPlayers()) {
-			List<Integer> list = scoreMap.getOrDefault(p.getName(), List.of());
-			p.addScore(list.stream().mapToInt(Integer::intValue).sum());
-		}
-		view.displayScoreboard(state.getPlayers(), scoreMap);
+		view.displayBlackHoleMessage("\n●  ●  ●  THE BLACK HOLE HAS FORMED ●  ●  ●");
 
 		// Find winners
 		processFinalResults(state);
@@ -89,8 +82,10 @@ public class GameController {
 				success = true;
 			} catch (InvalidMoveException e) {
 				view.displayError(e.getMessage());
+				view.display("Please enter the Row and Coloumn again.");
 			} catch (OccupiedCellException e) {
 				view.displayError(e.getMessage());
+				view.display("Please enter the Row and Coloumn again.");
 			}
 		}
 	}

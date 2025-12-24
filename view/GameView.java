@@ -1,7 +1,8 @@
 package view;
 
 import java.util.Scanner;
-import model.CenteredTriangleBoard;
+
+import model.Board;
 import model.Player;
 import java.util.*;
 
@@ -22,8 +23,8 @@ public class GameView {
         System.out.println("\n" + ConsoleColors.BOLD + ConsoleColors.YELLOW + "●  ●  ●  THE ROUND BEGINS  ●  ●  ●" + ConsoleColors.RESET + "\n");
     }
     
-    public void displayRoundOver(String msg) {
-    	 System.out.println("\n" + ConsoleColors.BOLD + ConsoleColors.CYAN+ msg+ ConsoleColors.RESET + "\n");
+    public void displayRoundOver() {
+    	 System.out.println("\n" + ConsoleColors.BOLD + ConsoleColors.CYAN+ "●  ●  ●  ●  ●   GAME FINISHED   ●  ●  ●  ●  ●"+ ConsoleColors.RESET + "\n");
     }
     
     public void displayPlayerList(List<Player> players) {
@@ -50,7 +51,7 @@ public class GameView {
     }
     
     public void display(String msg) {
-    	System.out.println(msg);
+    	System.out.println(ConsoleColors.BOLD + msg + ConsoleColors.RESET);
     }
     private void howToPlay() {
         System.out.println(ConsoleColors.BOLD + "HOW TO PLAY:" + ConsoleColors.RESET);
@@ -87,7 +88,7 @@ public class GameView {
         }
     }
 
-    public void displayBoard(CenteredTriangleBoard board) {
+    public void displayBoard(Board board) {
         String[][] data = board.getBoardArray();
         int rows = board.getRows();
         Set<String> absorbed = board.getAbsorbedCells();
@@ -149,10 +150,10 @@ public class GameView {
     }
     
     public int getInt(String msg) {
-        System.out.print(ConsoleColors.BOLD + msg + ConsoleColors.RESET);
+        display(msg);
         while (!sc.hasNextInt()) {
         	String invalid = sc.next(); // invalid input
-            System.out.println(ConsoleColors.RED + "   ❌ '" + invalid + "' is not a number! Please enter a valid numeric value." + ConsoleColors.RESET);
+            displayError(invalid + "' is not a number! Please enter a valid numeric value.");
         }
         return sc.nextInt();
     }
@@ -164,7 +165,7 @@ public class GameView {
             if (input.equals("Y") || input.equals("N")) {
                 return input;
             }
-            System.out.println(ConsoleColors.RED + "   ⚠️ Invalid input! Please enter 'Y' for Yes or 'N' for No." + ConsoleColors.RESET);
+            displayError("   ⚠️ Invalid input! Please enter 'Y' for Yes or 'N' for No.");
         }
     }
 }

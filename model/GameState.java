@@ -3,25 +3,46 @@ package model;
 import java.util.List;
 
 public class GameState {
-    public List<Player> players;
-    public CenteredTriangleBoard board;
-    public int maxRange;
+	private List<Player> players;
+	private Board board;
+	private int maxRange;
 
-    public int round = 1;
-    public int turn = 0;
-    public int moveNumber = 1;
+	private int round = 1;
+	private int turn = 0;
+	private int moveNumber = 1;
 
-    public GameState(List<Player> players,
-                     CenteredTriangleBoard board,
-                     int maxRange) {
-        this.players = players;
-        this.board = board;
-        this.maxRange = maxRange;
-    }
+	public GameState(List<Player> players, Board board, int maxRange) {
+		this.players = players;
+		this.board = board;
+		this.maxRange = maxRange;
+	}
 
-    public void nextMoveCycle() {
-        if (turn == players.size() - 1) {
-            moveNumber++;
-        }
-    }
+	public List<Player> getPlayers() {
+		return players;
+	}
+
+	public Board getBoard() {
+		return board;
+	}
+
+	public int getTurn() {
+		return turn;
+	}
+
+	public void setTurn(int turn) {
+		this.turn = turn;
+	}
+
+	public int getMoveNumber() {
+		return moveNumber;
+	}
+
+	public void setMoveNumber(int moveNumber) {
+		this.moveNumber=moveNumber;
+	}
+	public void nextMoveCycle() {
+		if (turn == players.size() - 1) {
+			moveNumber++;
+		}
+	}
 }

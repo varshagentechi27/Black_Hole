@@ -4,7 +4,7 @@ import java.util.*;
 import exception.InvalidMoveException;
 import exception.OccupiedCellException;
 
-public class CenteredTriangleBoard {
+public class CenteredTriangleBoard implements Board{
 
     private final String[][] board;
     private final int rows;

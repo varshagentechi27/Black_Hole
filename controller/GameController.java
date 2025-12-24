@@ -60,9 +60,9 @@ public class GameController {
 		}
 
 		state.getBoard().placeBlackHole();
-		view.displayBoard((CenteredTriangleBoard) state.getBoard());
+		view.displayBoard(state.getBoard());
 		view.displayMessage("\n●  ●  ●  THE BLACK HOLE HAS FORMED ●  ●  ●");
-
+		
 		Map<String, List<Integer>> scoreMap = state.getBoard().calculateScores();
 		for (Player p : state.getPlayers()) {
 			List<Integer> list = scoreMap.getOrDefault(p.getName(), List.of());
@@ -71,14 +71,7 @@ public class GameController {
 		view.displayScoreboard(state.getPlayers(), scoreMap);
 
 		// Find winners
-		state.getPlayers().sort(Comparator.comparingInt(Player::getTotalScore));
-		int minScore = state.getPlayers().get(0).getTotalScore();
-		List<Player> winners = new ArrayList<>();
-		for (Player p : state.getPlayers())
-			if (p.getTotalScore() == minScore)
-				winners.add(p);
-
-		view.displayWinner(winners);
+		processFinalResults(state);
 	}
 
 	private void handleUserTurn(Board board, String label) {
@@ -103,16 +96,53 @@ public class GameController {
 	}
 
 	private void autoMove(Board board, String label) {
-		while (true) {
-			int r = rand.nextInt(board.getRows());
-			int c = rand.nextInt(r + 1);
-			try {
-				board.place(r, c, label);
-				view.display("Computer chose: (" + (r + 1) + "," + (c + 1) + ")");
-				break;
-			} catch (Exception e) {
-				view.displayError(e.getMessage());
+		List<int[]> availableMoves = board.getAvailableMoves();
+		if (availableMoves.isEmpty()) return;
+
+		// Strategy: Favor edges/corners to reduce the chance of being absorbed by BH
+		List<int[]> strategicMoves = new ArrayList<>();
+		for (int[] move : availableMoves) {
+			if (board.isEdge(move[0], move[1])) {
+				strategicMoves.add(move);
 			}
 		}
+
+		// Select from strategy if possible, otherwise any valid move
+		int[] choice = strategicMoves.isEmpty() ? 
+					   availableMoves.get(rand.nextInt(availableMoves.size())) : 
+					   strategicMoves.get(rand.nextInt(strategicMoves.size()));
+
+		try {
+			board.place(choice[0], choice[1], label);
+			view.display("Computer chose: (" + (choice[0] + 1) + "," + (choice[1] + 1) + ")");
+		} catch (Exception e) {
+			view.displayError(e.getMessage());
+		}
+	}
+	
+	private void processFinalResults(GameState state) {
+		Map<String, List<Integer>> scoreMap = state.getBoard().calculateScores();
+		for (Player p : state.getPlayers()) {
+			List<Integer> list = scoreMap.getOrDefault(p.getName(), List.of());
+			int sum = 0;
+			for (int score : list) {
+				sum += score;
+			}
+			p.addScore(sum);
+		}
+		view.displayScoreboard(state.getPlayers(), scoreMap);
+
+		List<Player> tempPlayers = new ArrayList<>(state.getPlayers());
+		tempPlayers.sort(Comparator.comparingInt(Player::getTotalScore));
+		int minScore = tempPlayers.get(0).getTotalScore();
+		
+		List<Player> winners = new ArrayList<>();
+		for (Player p : state.getPlayers()) {
+			if (p.getTotalScore() == minScore) {
+				winners.add(p);
+			}
+		}
+
+		view.displayWinner(winners);
 	}
 }

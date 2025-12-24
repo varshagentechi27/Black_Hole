@@ -16,15 +16,37 @@ public class CenteredTriangleBoard implements Board{
         this.board = new String[rows][rows];
     }
 
+    @Override
     public int getRows() { return rows; }
+    
+    @Override
     public String[][] getBoardArray() { return board; }
+    
+    @Override
     public int getBhRow() { return bhRow; }
+    
+    @Override
     public Set<String> getAbsorbedCells() { return absorbedCells; }
     
-    private boolean valid(int r, int c) {
-        return r >= 0 && r < rows && c >= 0 && c <= r;
-    }
-    
+    @Override
+	public List<int[]> getAvailableMoves() {
+		List<int[]> moves = new ArrayList<>();
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j <= i; j++) {
+                if (board[i][j] == null) {
+                    moves.add(new int[]{i, j});
+                }
+            }
+        }
+        return moves;
+	}
+
+	@Override
+	public boolean isEdge(int r, int c) {
+		return r == 0 || r == rows - 1 || c == 0 || c == r;
+	}
+	
+	@Override
     public boolean isRowFull(int r) {
         if (r < 0 || r >= rows) return true;
         for (int j = 0; j <= r; j++) {
@@ -33,12 +55,14 @@ public class CenteredTriangleBoard implements Board{
         return true;
     }
     
+	@Override
     public void validateRow(int r) throws InvalidMoveException {
     	 if (r < 0 || r >= rows) {
              throw new InvalidMoveException("Invalid Row! Please enter a row from 1 to " + rows + ".");
          }
 	}
 
+	@Override
     public void place(int r, int c, String val) throws InvalidMoveException, OccupiedCellException {
          if (c < 0 || c > r) {
 //             throw new InvalidMoveException("Invalid Position! For Row " + (r + 1) + ", please enter a position from 1 to " + (r + 1) + ".");
@@ -54,7 +78,8 @@ public class CenteredTriangleBoard implements Board{
          board[r][c] = val;
     }
 
-    public boolean hasOneEmptyLeft() {
+	@Override
+	public boolean hasOneEmptyLeft() {
         int empty = 0;
         for (int i = 0; i < rows; i++)
             for (int j = 0; j <= i; j++)
@@ -62,7 +87,8 @@ public class CenteredTriangleBoard implements Board{
         return empty == 1;
     }
 
-    public void placeBlackHole() {
+	@Override
+	public void placeBlackHole() {
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j <= i; j++) {
                 if (board[i][j] == null) {
@@ -76,21 +102,8 @@ public class CenteredTriangleBoard implements Board{
         }
     }
 
-    private void identifyAbsorbedNeighbors() {
-        int[][] adj = {
-            {bhRow, bhCol - 1}, {bhRow, bhCol + 1},
-            {bhRow - 1, bhCol - 1}, {bhRow - 1, bhCol},
-            {bhRow + 1, bhCol}, {bhRow + 1, bhCol + 1}
-        };
-        for (int[] p : adj) {
-            int r = p[0], c = p[1];
-            if (valid(r, c) && board[r][c] != null && !board[r][c].equals("BH")) {
-                absorbedCells.add(r + "," + c);
-            }
-        }
-    }
-
-    public Map<String, List<Integer>> calculateScores() {
+	@Override
+	public Map<String, List<Integer>> calculateScores() {
         Map<String, List<Integer>> map = new HashMap<>();
         int[][] adj = {
             {bhRow, bhCol - 1}, {bhRow, bhCol + 1},
@@ -107,6 +120,28 @@ public class CenteredTriangleBoard implements Board{
         }
         return map;
     }
+	
+	private boolean valid(int r, int c) {
+        return r >= 0 && r < rows && c >= 0 && c <= r;
+    }
+	
+    private void identifyAbsorbedNeighbors() {
+        int[][] adj = {
+            {bhRow, bhCol - 1}, {bhRow, bhCol + 1},
+            {bhRow - 1, bhCol - 1}, {bhRow - 1, bhCol},
+            {bhRow + 1, bhCol}, {bhRow + 1, bhCol + 1}
+        };
+        for (int[] p : adj) {
+            int r = p[0], c = p[1];
+            if (valid(r, c) && board[r][c] != null && !board[r][c].equals("BH")) {
+                absorbedCells.add(r + "," + c);
+            }
+        }
+    }
+
+    
+
+	
 
   
 	

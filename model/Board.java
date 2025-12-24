@@ -20,4 +20,7 @@ public interface Board {
     // Validation methods needed for Human input
     void validateRow(int r) throws InvalidMoveException;
     boolean isRowFull(int r);
+    
+    List<int[]> getAvailableMoves();
+    boolean isEdge(int r, int c);
 }

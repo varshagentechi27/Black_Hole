@@ -4,6 +4,7 @@ import java.util.Scanner;
 
 import model.Board;
 import model.Player;
+import model.ComputerPlayer;
 import java.util.*;
 
 public class GameView {
@@ -31,7 +32,7 @@ public class GameView {
         System.out.println(ConsoleColors.BOLD + "PARTICIPATING PLAYERS:" + ConsoleColors.RESET);
         for (Player p : players) {
             String color = ConsoleColors.BOLD + ConsoleColors.getPlayerColor(p.getId());
-            String type = p.isComputer() ? " (Computer)" : " (Human)";
+            String type = (p instanceof ComputerPlayer) ? " (Computer)" : " (Human)";
             System.out.println(" - Player " + color + p.getName() + ConsoleColors.RESET + type);
         }
     }
@@ -89,8 +90,7 @@ public class GameView {
     }
 
     public void displayBoard(Board board) {
-        String[][] data = board.getBoardArray();
-        int rows = board.getRows();
+    	int rows = board.getRows();
         Set<String> absorbed = board.getAbsorbedCells();
         int bhRow = board.getBhRow();
 
@@ -99,7 +99,10 @@ public class GameView {
             System.out.printf("Row %-2d ", i + 1);
             System.out.print(" ".repeat((rows - i - 1) * 4));
             for (int j = 0; j <= i; j++) {
-                System.out.print(formatCell(i, j, data[i][j], absorbed, bhRow));
+                // CHANGE: Ask the board for the specific cell content here
+                String cellContent = board.getCell(i, j); 
+                
+                System.out.print(formatCell(i, j, cellContent, absorbed, bhRow));
             }
             System.out.println("\n");
         }

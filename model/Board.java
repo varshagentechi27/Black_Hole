@@ -13,7 +13,8 @@ public interface Board {
     Map<String, List<Integer>> calculateScores();
     
     // Methods needed for the View to display the board
-    String[][] getBoardArray();
+//    String[][] getBoardArray();
+    String getCell(int r, int c);
     Set<String> getAbsorbedCells();
     int getBhRow();
     

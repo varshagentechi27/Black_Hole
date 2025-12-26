@@ -1,6 +1,7 @@
 package controller;
 
 import model.*;
+import view.ConsoleColors;
 import view.GameView;
 import exception.*;
 import java.util.*;
@@ -11,9 +12,25 @@ public class GameController {
 
 	public void start() throws Exception {
 		view.welcome();
-		int users = view.getInt("Enter number of users (1-5): ");
-		if (users < 1 || users > 5)
-			throw new InvalidPlayerCountException("Users must be 1-5");
+		int users;
+		Scanner sc = new Scanner(System.in);
+
+		while (true) {
+    	System.out.print(ConsoleColors.BOLD+ConsoleColors.WHITE_ON_SOFT_YELLOW +" Enter Number of Users (1-5):" +ConsoleColors.RESET+" ");
+
+    while (!sc.hasNextInt()) {
+        String invalid = sc.next();
+        view.displayError(invalid + " is not a Number! Please enter a number between 1 to 5.");
+        System.out.print(ConsoleColors.WHITE_ON_SOFT_YELLOW+ "Enter Number of Users (1-5):" + ConsoleColors.RESET+"");
+    }
+
+    users = sc.nextInt();
+
+    if (users >= 1 && users <= 5) break;
+    view.displayError("Please enter a number between 1 and 5.");
+}
+
+
 
 		int actual = (users == 1) ? 2 : users;
 		int rows = (actual == 2) ? 6 : (actual == 3) ? 7 : (actual == 4) ? 9 : 11;
@@ -36,6 +53,23 @@ public class GameController {
 		view.displayLegend();
 		view.displayGuide(rows);
 		view.displayPlayerList(state.getPlayers());
+
+		int playerCount = state.getPlayers().size();
+		int maxNum;
+		if(playerCount==1 || playerCount==2){
+			maxNum=10;
+		}
+		else if(playerCount==3){
+			maxNum=9;
+		}
+		else if(playerCount==4){
+			maxNum=11;
+		}
+		else{
+			maxNum=13;
+		}
+
+		view.display("\n"+ConsoleColors.RED+"           Note: In this game, players will enter numbers from 1 to "+maxNum+" one by one during play.           "+ConsoleColors.RESET);
 
 		play(state);
 	}
@@ -69,7 +103,8 @@ public class GameController {
 
 		state.getBoard().placeBlackHole();
 		view.displayBoard(state.getBoard());
-		view.displayBlackHoleMessage("\n●  ●  ●  THE BLACK HOLE HAS FORMED ●  ●  ●");
+		System.out.println();
+		view.displayBlackHoleMessage("●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  THE BLACK HOLE HAS FORMED  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ● ");
 
 		// Find winners
 		processFinalResults(state);
@@ -82,7 +117,7 @@ public class GameController {
 				int r = view.getInt("Row: ") - 1;
 				board.validateRow(r);
 				if (board.isRowFull(r)) {
-					view.displayError("Row " + (r + 1) + " is full! Please enter another Row number.");
+					view.displayError("Row " + (r + 1) + " is full! Please enter another Row Number.");
 					continue;
 				}
 				int c = view.getInt("Position: ") - 1;
@@ -90,7 +125,7 @@ public class GameController {
 				success = true;
 			} catch (InvalidMoveException | OccupiedCellException e) {
 				view.displayError(e.getMessage());
-				view.display("Please enter the Row and Coloumn again.");
+				view.display("Please enter the Row and Column again.");
 			}
 		}
 	}

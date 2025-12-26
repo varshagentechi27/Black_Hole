@@ -40,6 +40,8 @@ public class ConsoleColors {
     
     //start game
     public static final String PASTEL_GREEN = "\u001B[92m";
+    public static final String BLACK_ON_GREEN = "\u001B[38;2;0;0;0m\u001B[48;2;80;200;120m";
+
 
 
 

@@ -127,7 +127,7 @@ public class GameView {
         if (winners.size() > 1) {
             System.out.println("\n" + ConsoleColors.BOLD + ConsoleColors.SKY_BLUE
                     + "╔═════════════════════════════════════════════════════════════════════════════════════════════════════════╗");
-            System.out.print("║                                      " + "\u001B[7m" + "  🤝 IT'S A DRAW BETWEEN: ");
+            System.out.print("║                                      " +ConsoleColors.BOLD+ "\u001B[7m" + "  🤝 IT'S A DRAW BETWEEN: ");
             for (int i = 0; i < winners.size(); i++) {
                 System.out.print(winners.get(i).getName() + (i < winners.size() - 1 ? ", " : ""));
             }
@@ -140,7 +140,7 @@ public class GameView {
 System.out.println("\n" + winColor +
         "╔═════════════════════════════════════════════════════════════════════════════════════════════════════════╗");
 System.out.println("║                                                                                                         ║");
-System.out.println("║                                      " + "\u001B[7m" + " 🏆 PLAYER " + winner.getName() + " WINS THE GAME!! 🏆 " + ConsoleColors.RESET + winColor + "                                     ║");
+System.out.println("║                                      " +ConsoleColors.BOLD+ "\u001B[7m" + " 🏆 PLAYER " + winner.getName() + " WINS THE GAME!! 🏆 " + ConsoleColors.RESET + winColor + "                                     ║");
 System.out.println("║                                                                                                         ║");
 System.out.println("╚═════════════════════════════════════════════════════════════════════════════════════════════════════════╝" + ConsoleColors.RESET);
 
@@ -149,7 +149,7 @@ System.out.println("╚═══════════════════
 
     //Error
     public void displayError(String msg) {
-        System.out.println(ConsoleColors.RED + "   ❌ " + msg + ConsoleColors.RESET);
+        System.out.println(ConsoleColors.BOLD+ ConsoleColors.RED + "   ❌ " + msg + ConsoleColors.RESET);
     }
 
     public void displayTurn(Player p, String label) {
@@ -157,17 +157,9 @@ System.out.println("╚═══════════════════
         System.out.println("Player " + color + p.getName() + ConsoleColors.RESET +" is placing: " + color + "● (" + label + ")" + ConsoleColors.RESET);
     }
 
-    public void displayStatus(String msg) {
-        System.out.println(ConsoleColors.GREEN + msg + ConsoleColors.RESET);
-    }
-    
-    public void display(String msg) {
-        System.out.println(ConsoleColors.BOLD + msg + ConsoleColors.RESET);
-    }
-    
     //Black hole formed
     public void displayBlackHoleMessage(String msg) {
-        System.out.println(ConsoleColors.BLACK_HOLE+ msg+ ConsoleColors.RESET);
+        System.out.println(ConsoleColors.BOLD + ConsoleColors.BLACK_HOLE+ msg+ ConsoleColors.RESET);
     }
     
     
@@ -212,9 +204,11 @@ System.out.println("╚═══════════════════
         return sc.nextInt();
     }
 
+    //Play again ?
     public String getYesNo(String msg) {
         while (true) {
-            System.out.print(ConsoleColors.GREEN + msg + ConsoleColors.RESET);
+            System.out.print(ConsoleColors.BOLD+ ConsoleColors.BLACK_ON_GREEN +msg + ConsoleColors.RESET);
+            System.out.print("  ");
             String input = sc.next().trim().toUpperCase();
             if (input.equals("Y") || input.equals("N")) {
                 return input;
@@ -222,4 +216,15 @@ System.out.println("╚═══════════════════
             displayError("   ⚠️ Invalid input! Please enter 'Y' for Yes or 'N' for No.");
         }
     }
+
+    //Display after Yes and No
+    public void displayStatus(String msg) {
+        System.out.println(ConsoleColors.BOLD + ConsoleColors.WHITE_ON_LAVENDER_PASTEL + msg + ConsoleColors.RESET);
+    }
+    
+
+    public void display(String msg) {
+        System.out.println(ConsoleColors.BOLD + msg + ConsoleColors.RESET);
+    }
+    
 }

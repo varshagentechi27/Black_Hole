@@ -14,14 +14,17 @@ public class Main {
 
             view.displayRoundOver();
             
-            String choice = view.getYesNo("Would you like to play another round? (Y/N): ");
+            String choice = view.getYesNo(" Would you like to play another round? (Y/N):");
 
             if (choice.equals("N")) {
-                view.displayStatus("\nThank you for playing BLACK HOLE! ● See you next time! ●");
+                System.out.println();
+                view.displayStatus("                        Thank you for playing BLACK HOLE! ● See you next time! ●                          ");
                 break;
             }
             
-            view.displayStatus("\n♻️  Resetting board... Getting ready for a new game!\n");
+            System.out.println();
+            view.displayStatus("                           ♻️ Resetting board... Getting ready for a New Game!                             ");
+            System.out.println();
         }
     }
 }

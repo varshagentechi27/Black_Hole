@@ -22,10 +22,6 @@ public class GameView {
         howToPlay();
     }
 
-    //Enter Users
-    private void enterUsers(){
-
-    }
 
     // How to play
     private void howToPlay() {

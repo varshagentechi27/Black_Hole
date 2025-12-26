@@ -2,6 +2,7 @@ package view;
 
 import model.Board;
 import model.Player;
+import exception.InvalidYesNoException; // Import the custom exception
 import model.ComputerPlayer;
 import java.util.*;
 
@@ -9,6 +10,7 @@ public class GameView {
 
     private final Scanner sc = new Scanner(System.in);
 
+    //welcome to game
     public void welcome() {
         System.out.println("");
         System.out.println(ConsoleColors.BOLD + ConsoleColors.BLACK_HOLE
@@ -48,7 +50,7 @@ public class GameView {
     // Color Legend
     public void displayLegend() {
         System.out.println("");
-        System.out.println(ConsoleColors.BOLD + ConsoleColors.WHITE_ON_ORANGE
+        System.out.println(ConsoleColors.BOLD + ConsoleColors.BLACK_ON_ORANGE
                 + "                                               COLOR LEGEND                                               "+ ConsoleColors.RESET+"\n");
         System.out.println("    ◯     : Empty Cell (Available for placement)");
         System.out.println(
@@ -63,7 +65,7 @@ public class GameView {
 
     // Position Guide
     public void displayGuide(int rows) {
-        System.out.println(ConsoleColors.BOLD + ConsoleColors.WHITE_ON_ORANGE
+        System.out.println(ConsoleColors.BOLD + ConsoleColors.BLACK_ON_ORANGE
                 + "                                     POSITION GUIDE [ROW, POSITION]                                       " + ConsoleColors.RESET);
         System.out.println("");
         for (int i = 0; i < rows; i++) {
@@ -78,7 +80,7 @@ public class GameView {
 
     // Participating Players
     public void displayPlayerList(List<Player> players) {
-        System.out.println(ConsoleColors.BOLD + ConsoleColors.WHITE_ON_ORANGE
+        System.out.println(ConsoleColors.BOLD + ConsoleColors.BLACK_ON_ORANGE
                 + "                                           PARTICIPATING PLAYERS                                          "+ ConsoleColors.RESET);
         System.out.println("");
         for (Player p : players) {
@@ -100,7 +102,7 @@ public class GameView {
         Set<String> absorbed = board.getAbsorbedCells();
         int bhRow = board.getBhRow();
 
-        System.out.println("\n" + ConsoleColors.BOLD +ConsoleColors.WHITE_ON_LAVENDER_PASTEL+ "                                               CURRENT BOARD                                              " + ConsoleColors.RESET);
+        System.out.println("\n" + ConsoleColors.BOLD +ConsoleColors.BLACK_ON_LAVENDER_PASTEL+ "                                               CURRENT BOARD                                              " + ConsoleColors.RESET);
         System.out.println("");
         for (int i = 0; i < rows; i++) {
             System.out.printf("Row %-2d ", i + 1);
@@ -197,34 +199,86 @@ System.out.println("╚═══════════════════
 
     public int getInt(String msg) {
         display(msg);
-        while (!sc.hasNextInt()) {
-            String invalid = sc.next(); // invalid input
-            displayError(invalid + "' is not a number! Please enter a valid numeric value.");
+        while (true) {
+            String input = sc.next();
+            try {
+                return Integer.parseInt(input); 
+            } catch (NumberFormatException e) {
+                displayError(input + "' is not a number! Please enter a valid numeric value.");
+                display(msg); 
+            }
         }
-        return sc.nextInt();
+        
     }
 
     //Play again ?
-    public String getYesNo(String msg) {
+    public boolean askToPlayAgain() {
         while (true) {
-            System.out.print(ConsoleColors.BOLD+ ConsoleColors.BLACK_ON_GREEN +msg + ConsoleColors.RESET);
-            System.out.print("  ");
+            System.out.println(ConsoleColors.BOLD+ ConsoleColors.BLACK_ON_GREEN +" Would you like to play another round? (Y/N):"+ ConsoleColors.RESET);
             String input = sc.next().trim().toUpperCase();
-            if (input.equals("Y") || input.equals("N")) {
-                return input;
-            }
-            displayError("   ⚠️ Invalid input! Please enter 'Y' for Yes or 'N' for No.");
+            try {
+                if (!input.equals("Y") && !input.equals("N")) {
+                    throw new InvalidYesNoException("   ⚠️ Invalid input! Please enter 'Y' for Yes or 'N' for No.");
+                }
+                return input.equals("Y");
+                
+            } catch (InvalidYesNoException e) {
+                displayError(e.getMessage());
+            }           
         }
     }
 
     //Display after Yes and No
-    public void displayStatus(String msg) {
-        System.out.println(ConsoleColors.BOLD + ConsoleColors.WHITE_ON_LAVENDER_PASTEL + msg + ConsoleColors.RESET);
+    public void displayAfterYesorNO(String msg) {
+        System.out.println(ConsoleColors.BOLD + ConsoleColors.BLACK_ON_LAVENDER_PASTEL + msg + ConsoleColors.RESET);
     }
     
+    public void displayStatus(String msg) {
+    	System.out.println(ConsoleColors.BOLD + ConsoleColors.BLACK_ON_LAVENDER_PASTEL + msg + ConsoleColors.RESET);
+    }
+    
+    //Thank you message
+    public void displayExitMessage() {
+    	displayStatus("                        Thank you for playing BLACK HOLE! ● See you next time! ●                          " );
+    }
+    
+    // Reset Message
+    public void displayResetMessage() {
+    	displayStatus("                           ♻️ Resetting board... Getting ready for a New Game!                             ");
 
+    }
+    
     public void display(String msg) {
+    	System.out.println();
         System.out.println(ConsoleColors.BOLD + msg + ConsoleColors.RESET);
+    }
+    
+    public int getNumberOfUsers() {
+        int users;
+        while (true) {
+            System.out.print(ConsoleColors.BOLD + ConsoleColors.WHITE_ON_SOFT_YELLOW
+                    + " Enter Number of Users (1-5): " + ConsoleColors.RESET);
+            String input = sc.next();
+            try {
+                users = Integer.parseInt(input);
+                if (users >= 1 && users <= 5) {
+                    return users;
+                }
+                // Logic Error (not a parsing error), so we print manually
+                displayError("Please enter a number between 1 and 5.");
+                
+            } catch (NumberFormatException e) {
+                // Parsing Error
+                displayError("'" + input + "' is not a number! Please enter a valid numeric value.");
+            }
+        }
+    }
+
+    // Display max number note
+    public void displayMaxNumberNote(int maxNum) {
+        display("\n" + ConsoleColors.RED
+                + "           Note: In this game, players will enter numbers from 1 to " + maxNum
+                + " one by one during play.           " + ConsoleColors.RESET);
     }
     
 }

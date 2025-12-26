@@ -10,10 +10,11 @@ public interface Board {
     boolean hasOneEmptyLeft();
     void place(int r, int c, String val) throws InvalidMoveException, OccupiedCellException;
     void placeBlackHole();
+    
+    // Scoring logic
     Map<String, List<Integer>> calculateScores();
     
     // Methods needed for the View to display the board
-    //String[][] getBoardArray();
     String getCell(int r, int c);
     Set<String> getAbsorbedCells();
     int getBhRow();
@@ -22,6 +23,7 @@ public interface Board {
     void validateRow(int r) throws InvalidMoveException;
     boolean isRowFull(int r);
     
+    //Computer's move helper methods
     List<int[]> getAvailableMoves();
     boolean isEdge(int r, int c);
 }

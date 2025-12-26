@@ -31,8 +31,8 @@ public class ConsoleColors {
     public static final String MINT_GREEN = "\u001B[38;5;120m";
     
     //Block Colors
-    public static final String WHITE_ON_ORANGE = "\u001B[37;48;5;208m";
-    public static final String WHITE_ON_LAVENDER_PASTEL = "\u001B[1;97;48;2;184;168;241m";
+    public static final String BLACK_ON_ORANGE = "\u001B[30;48;5;208m";
+    public static final String BLACK_ON_LAVENDER_PASTEL = "\u001B[30;48;2;184;168;241m";
     public static final String BLACK_ON_PALE_BLUE = "\u001B[30;48;5;153m";
 
     //GameController me
@@ -42,11 +42,6 @@ public class ConsoleColors {
     public static final String PASTEL_GREEN = "\u001B[92m";
     public static final String BLACK_ON_GREEN = "\u001B[38;2;0;0;0m\u001B[48;2;80;200;120m";
 
-
-
-
-
-    
 
 
     private static final String[] PLAYER_COLORS = {FLAMINGO_PINK, GOLDEN_YELLOW, LIGHT_BLUE, CORAL_ORANGE, MINT_GREEN, GREEN, RED};

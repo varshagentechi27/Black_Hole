@@ -1,7 +1,6 @@
 package controller;
 
 import model.*;
-import view.ConsoleColors;
 import view.GameView;
 import exception.*;
 import java.util.*;
@@ -12,73 +11,51 @@ public class GameController {
 
 	public void start() throws Exception {
 		view.welcome();
-		int users;
-		Scanner sc = new Scanner(System.in);
 
-		while (true) {
-    	System.out.print(ConsoleColors.BOLD+ConsoleColors.WHITE_ON_SOFT_YELLOW +" Enter Number of Users (1-5):" +ConsoleColors.RESET+" ");
+		// input handling
+		int users = view.getNumberOfUsers();
 
-    while (!sc.hasNextInt()) {
-        String invalid = sc.next();
-        view.displayError(invalid + " is not a Number! Please enter a number between 1 to 5.");
-        System.out.print(ConsoleColors.WHITE_ON_SOFT_YELLOW+ "Enter Number of Users (1-5):" + ConsoleColors.RESET+"");
-    }
-
-    users = sc.nextInt();
-
-    if (users >= 1 && users <= 5) break;
-    view.displayError("Please enter a number between 1 and 5.");
-}
-
-
-
+		// if 1 player, play against the computer (Total 2 players)
 		int actual = (users == 1) ? 2 : users;
+
 		int rows = (actual == 2) ? 6 : (actual == 3) ? 7 : (actual == 4) ? 9 : 11;
 
 		List<Player> players = new ArrayList<>();
 		for (int i = 0; i < actual; i++) {
+			// For single-player mode, the second player (index 1) is the Computer.
 			boolean isComp = (users == 1 && i == 1);
 			String name = "" + (char) ('A' + i);
-
 			if (isComp) {
-				players.add(new ComputerPlayer(name, i));
+				players.add(new ComputerPlayer(name, i)); // polymorphism, Computer is treated as Player (Upcasting)
 			} else {
 				players.add(new HumanPlayer(name, i));
 			}
 		}
 
 		Board board = new CenteredTriangleBoard(rows);
-		GameState state = new GameState(players, new CenteredTriangleBoard(rows), 10);
+		GameState state = new GameState(players, board);
 
 		view.displayLegend();
 		view.displayGuide(rows);
 		view.displayPlayerList(state.getPlayers());
 
+		// Determine the max token number players will reach
 		int playerCount = state.getPlayers().size();
-		int maxNum;
-		if(playerCount==1 || playerCount==2){
-			maxNum=10;
-		}
-		else if(playerCount==3){
-			maxNum=9;
-		}
-		else if(playerCount==4){
-			maxNum=11;
-		}
-		else{
-			maxNum=13;
-		}
+		int maxNum = (playerCount == 1 || playerCount == 2) ? 10
+				: (playerCount == 3) ? 9 : (playerCount == 4) ? 11 : 13;
 
-		view.display("\n"+ConsoleColors.RED+"           Note: In this game, players will enter numbers from 1 to "+maxNum+" one by one during play.           "+ConsoleColors.RESET);
+		view.displayMaxNumberNote(maxNum); // display note handled in view
 
 		play(state);
 	}
 
+	// Runs until only one empty spot remains, which becomes the Black Hole
 	private void play(GameState state) {
 		view.displayRoundStart();
 		state.setTurn(0);
 		state.setMoveNumber(1);
 
+		// until one spot is left
 		while (!state.getBoard().hasOneEmptyLeft()) {
 			view.displayBoard(state.getBoard());
 			Player p = state.getPlayers().get(state.getTurn());
@@ -86,30 +63,34 @@ public class GameController {
 
 			view.displayTurn(p, label);
 
-			if (p instanceof ComputerPlayer) {  
-			    try {
-			        Thread.sleep(700);
-			    } catch (Exception e) {
-			        view.displayError(e.getMessage());
-			    }
-			    autoMove(state.getBoard(), label); 
+			// Determine if the current player is Computer or Human
+			if (p instanceof ComputerPlayer) {
+				try {
+					Thread.sleep(700);
+				} catch (Exception e) {
+					view.displayError(e.getMessage());
+				}
+				autoMove(state.getBoard(), label);
 			} else {
-			    handleUserTurn(state.getBoard(), label); 
+				handleUserTurn(state.getBoard(), label);
 			}
-			
+
+			// Update state
 			state.nextMoveCycle();
 			state.setTurn((state.getTurn() + 1) % state.getPlayers().size());
 		}
 
+		// Black Hole Formation
 		state.getBoard().placeBlackHole();
 		view.displayBoard(state.getBoard());
 		System.out.println();
-		view.displayBlackHoleMessage("●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  THE BLACK HOLE HAS FORMED  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ● ");
+		view.displayBlackHoleMessage(
+				"●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  THE BLACK HOLE HAS FORMED  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ● ");
 
-		// Find winners
 		processFinalResults(state);
 	}
 
+	// Human input loop
 	private void handleUserTurn(Board board, String label) {
 		boolean success = false;
 		while (!success) {
@@ -123,27 +104,27 @@ public class GameController {
 				int c = view.getInt("Position: ") - 1;
 				board.place(r, c, label);
 				success = true;
-			} catch (InvalidMoveException | OccupiedCellException e) {
+			} catch (exception.InvalidMoveException | exception.OccupiedCellException e) {
 				view.displayError(e.getMessage());
 				view.display("Please enter the Row and Column again.");
 			}
 		}
 	}
 
+	// Computer: Prioritizes edge moves to minimize risk
 	private void autoMove(Board board, String label) {
 		List<int[]> availableMoves = board.getAvailableMoves();
 		if (availableMoves.isEmpty())
 			return;
 
-		// Strategy: Favor edges/corners to reduce the chance of being absorbed by BH
+		// Strategy: Favor edges/corners.
 		List<int[]> strategicMoves = new ArrayList<>();
 		for (int[] move : availableMoves) {
-			if (board.isEdge(move[0], move[1])) {
+			if (board.isEdge(move[0], move[1]))
 				strategicMoves.add(move);
-			}
 		}
 
-		// Select from strategy if possible, otherwise any valid move
+		// random move if no strategic moves are available
 		int[] choice = strategicMoves.isEmpty() ? availableMoves.get(rand.nextInt(availableMoves.size()))
 				: strategicMoves.get(rand.nextInt(strategicMoves.size()));
 
@@ -155,27 +136,32 @@ public class GameController {
 		}
 	}
 
+	// Scoring
 	private void processFinalResults(GameState state) {
+
+		// scores calculation based on tokens adjacent to the Black Hole
 		Map<String, List<Integer>> scoreMap = state.getBoard().calculateScores();
+
+		// Accumulate scores for each player
 		for (Player p : state.getPlayers()) {
 			List<Integer> list = scoreMap.getOrDefault(p.getName(), List.of());
 			int sum = 0;
-			for (int score : list) {
+			for (int score : list)
 				sum += score;
-			}
 			p.addScore(sum);
 		}
 		view.displayScoreboard(state.getPlayers(), scoreMap);
 
+		// Sort players to find the lowest score (the winner)
 		List<Player> tempPlayers = new ArrayList<>(state.getPlayers());
 		tempPlayers.sort(Comparator.comparingInt(Player::getTotalScore));
 		int minScore = tempPlayers.get(0).getTotalScore();
 
+		// Handle ties
 		List<Player> winners = new ArrayList<>();
 		for (Player p : state.getPlayers()) {
-			if (p.getTotalScore() == minScore) {
+			if (p.getTotalScore() == minScore)
 				winners.add(p);
-			}
 		}
 
 		view.displayWinner(winners);

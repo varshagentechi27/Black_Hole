@@ -2,19 +2,20 @@ package model;
 
 import java.util.List;
 
+// like a container for the active game session state.
 public class GameState {
 	private List<Player> players;
 	private Board board;
-	private int maxRange;
 
-	private int round = 1;
+	// index of the player whose turn it currently is (0 to players.size()-1)
 	private int turn = 0;
+
+	// represents the number that appears on the token
 	private int moveNumber = 1;
 
-	public GameState(List<Player> players, Board board, int maxRange) {
+	public GameState(List<Player> players, Board board) {
 		this.players = players;
 		this.board = board;
-		this.maxRange = maxRange;
 	}
 
 	public List<Player> getPlayers() {
@@ -38,8 +39,10 @@ public class GameState {
 	}
 
 	public void setMoveNumber(int moveNumber) {
-		this.moveNumber=moveNumber;
+		this.moveNumber = moveNumber;
 	}
+
+	// move number only increments after ALL players have taken a turn
 	public void nextMoveCycle() {
 		if (turn == players.size() - 1) {
 			moveNumber++;

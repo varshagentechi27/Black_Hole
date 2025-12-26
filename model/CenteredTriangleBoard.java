@@ -18,9 +18,11 @@ public class CenteredTriangleBoard implements Board{
 
     @Override
     public int getRows() { return rows; }
-    
+   
     @Override
-    public String[][] getBoardArray() { return board; }
+	public String getCell(int r, int c) {
+    	 return board[r][c];
+	}
     
     @Override
     public int getBhRow() { return bhRow; }
@@ -139,10 +141,6 @@ public class CenteredTriangleBoard implements Board{
         }
     }
 
-    
-
 	
-
-  
 	
 }

@@ -9,6 +9,7 @@ public class GameController {
 	private final GameView view = new GameView();
 	private final Random rand = new Random();
 
+	//called via Main method to start
 	public void start() throws Exception {
 		view.welcome();
 

@@ -7,15 +7,14 @@ public class Main {
 
 		while (true) {
 			try {
-				new GameController().start();
+				new GameController().start();      //creating an object of GameController and calling the start method 
 			} catch (Exception e) {
 				view.displayError("Fatal Error: " + e.getMessage());
 			}
 
 			view.displayRoundOver();
 
-			// Ask user if they want to play another round (returns true/false based on
-			// input)
+			// Ask user if they want to play another round (returns true/false based on input)
 			if (!view.askToPlayAgain()) {
 				view.displayExitMessage();
 				break;

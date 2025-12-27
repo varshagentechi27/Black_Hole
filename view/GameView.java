@@ -14,11 +14,11 @@ public class GameView {
     public void welcome() {
         System.out.println("");
         System.out.println(ConsoleColors.BOLD + ConsoleColors.BLACK_HOLE
-                + "==========================================================================================================");
+                + "==========================================================================================================="+ConsoleColors.RESET);
         System.out
-                .println("                                         WELCOME TO BLACK HOLE GAME                                       ");
+                .println(ConsoleColors.BOLD + ConsoleColors.BLACK_HOLE+"                                         WELCOME TO BLACK HOLE GAME                                        "+ConsoleColors.RESET);
         System.out
-                .println("=========================================================================================================="
+                .println(ConsoleColors.BOLD + ConsoleColors.BLACK_HOLE+"==========================================================================================================="
                         + ConsoleColors.RESET);
         System.out.println("");
         howToPlay();
@@ -28,45 +28,68 @@ public class GameView {
     // How to play
     private void howToPlay() {
         System.out.println(ConsoleColors.BOLD + ConsoleColors.WHITE_ON_WATERMELON_RED
-                + "                                              HOW TO PLAY?                                                " + ConsoleColors.RESET);
+                + "                                              HOW TO PLAY?                                                 " + ConsoleColors.RESET);
         System.out.println("");
         System.out.println(ConsoleColors.WHITE + "1. The board is a " + ConsoleColors.PURPLE + "Centered Triangle"
                 + ConsoleColors.RESET + " of empty circles " + ConsoleColors.WHITE + "(◯).");
         System.out.println("2. Players take turns placing numbered tokens (e.g., " + ConsoleColors.FLAMINGO_PINK + "A1, "+ConsoleColors.GOLDEN_YELLOW+
         "B1"
-                + ConsoleColors.RESET + ").");
+        + ConsoleColors.RESET + ").");
         System.out.println("3. Use the " + ConsoleColors.ORANGE+ "Row Number" + ConsoleColors.RESET
-                + " on the left to help identify positions.");
+        + " on the left to help identify positions.");
         System.out.println("4. When only " + ConsoleColors.SKY_BLUE + "One Empty Cell" + ConsoleColors.RESET
                 + " remains, it collapses into a " +ConsoleColors.BLACK_HOLE+" Black Hole (BH) "+ ConsoleColors.RESET + ".");
         System.out.println("5. Tokens directly touching" + ConsoleColors.RESET
                 + " the Black Hole are " + ConsoleColors.RED + "Absorbed" + ConsoleColors.RESET + " into your score.");
         System.out.println("6. Absorbed tokens stay " + ConsoleColors.YELLOW + "Colored" + ConsoleColors.RESET
-                + ", while safe tokens turn " + ConsoleColors.WHITE + "White" + ConsoleColors.RESET + ".");
+        + ", while safe tokens turn " + ConsoleColors.WHITE + "White" + ConsoleColors.RESET + ".");
         System.out.println("7. The player with the " + ConsoleColors.GREEN + "Lowest Total Score Wins" + ConsoleColors.RESET
-                + " the match!\n");
+        + " the match!\n");
     }
 
-    // Color Legend
-    public void displayLegend() {
-        System.out.println("");
-        System.out.println(ConsoleColors.BOLD + ConsoleColors.BLACK_ON_ORANGE
-                + "                                               COLOR LEGEND                                               "+ ConsoleColors.RESET+"\n");
-        System.out.println("    ◯     : Empty Cell (Available for placement)");
-        System.out.println(
+    
+    //Get no. of Users
+    public int getNumberOfUsers() {
+        int users;
+        while (true) {
+            System.out.print(ConsoleColors.BOLD + ConsoleColors.BLACK_ON_SOFT_YELLOW
+                    + " Enter Number of Users (1-5):" + ConsoleColors.RESET);
+                    System.out.print("  ");
+            String input = sc.next();
+            try {
+                users = Integer.parseInt(input);
+                if (users >= 1 && users <= 5) {
+                    return users;
+                }
+            // Logic Error (not a parsing error), so we print manually
+            displayError("Please enter a number between 1 and 5.");                    
+            } 
+            catch (NumberFormatException e) {
+                 // Parsing Error
+                displayError("'" + input + "' is not a number! Please enter a valid numeric value.");
+            }
+        }
+    }
+        // Color Legend
+        public void displayLegend() {
+            System.out.println("");
+            System.out.println(ConsoleColors.BOLD + ConsoleColors.BLACK_ON_ORANGE
+                    + "                                               COLOR LEGEND                                                "+ ConsoleColors.RESET+"\n");
+            System.out.println("    ◯     : Empty Cell (Available for placement)");
+            System.out.println(
                 ConsoleColors.FLAMINGO_PINK + " ◖ A1 ◗   : Active Token (Active during placement)" + ConsoleColors.RESET);
-        System.out.println(ConsoleColors.BLACK_HOLE + " ◖ BH ◗ " + ConsoleColors.RESET
+                System.out.println(ConsoleColors.BLACK_HOLE + " ◖ BH ◗ " + ConsoleColors.RESET
                 + "  : The Black Hole (Appears at the end)");
-        System.out.println(ConsoleColors.BOLD + ConsoleColors.FLAMINGO_PINK + " ◖ A1 ◗ " + ConsoleColors.RESET
+                System.out.println(ConsoleColors.BOLD + ConsoleColors.FLAMINGO_PINK + " ◖ A1 ◗ " + ConsoleColors.RESET
                 + "  : Absorbed Token (Keeps color)");
-        System.out.println(ConsoleColors.WHITE + " ◖ A5 ◗ " + ConsoleColors.RESET + "  : Safe Token (Turns White)\n");
-
-    }
+                System.out.println(ConsoleColors.WHITE + " ◖ A5 ◗ " + ConsoleColors.RESET + "  : Safe Token (Turns White)\n");
+                
+            }
 
     // Position Guide
     public void displayGuide(int rows) {
         System.out.println(ConsoleColors.BOLD + ConsoleColors.BLACK_ON_ORANGE
-                + "                                     POSITION GUIDE [ROW, POSITION]                                       " + ConsoleColors.RESET);
+                + "                                     POSITION GUIDE [ROW, POSITION]                                        " + ConsoleColors.RESET);
         System.out.println("");
         for (int i = 0; i < rows; i++) {
             System.out.printf("Row %-2d  ", i + 1);
@@ -75,21 +98,28 @@ public class GameView {
                 System.out.printf("[%d,%d]   ", i + 1, j + 1);
             System.out.println("\n");
         }
-
+        
     }
 
     // Participating Players
     public void displayPlayerList(List<Player> players) {
         System.out.println(ConsoleColors.BOLD + ConsoleColors.BLACK_ON_ORANGE
-                + "                                           PARTICIPATING PLAYERS                                          "+ ConsoleColors.RESET);
-        System.out.println("");
-        for (Player p : players) {
-            String color = ConsoleColors.BOLD + ConsoleColors.getPlayerColor(p.getId());
-            String type = (p instanceof ComputerPlayer) ? " (Computer)" : " ";
-            System.out.println(" - Player " + color + p.getName() + ConsoleColors.RESET + type);
+            + "                                           PARTICIPATING PLAYERS                                           "+ ConsoleColors.RESET);
+            System.out.println("");
+            for (Player p : players) {
+                String color = ConsoleColors.BOLD + ConsoleColors.getPlayerColor(p.getId());
+                String type = (p instanceof ComputerPlayer) ? " (Computer)" : " ";
+                System.out.println(" - Player " + color + p.getName() + ConsoleColors.RESET + type);
+            }
         }
+        
+        
+    // Note
+    public void displayMaxNumberNote(int maxNum) {
+        display("\n" + ConsoleColors.RED+ "         "+ConsoleColors.WHITE_ON_RED+" Note: "+ConsoleColors.RESET+ConsoleColors.RED+" In this game, players will enter numbers from "+ ConsoleColors.WHITE_ON_RED+ " 1 to " + maxNum + " "+ ConsoleColors.RESET+ConsoleColors.RED
+                + " one by one during play.           " + ConsoleColors.RESET);
     }
-
+            
     //Game Begins
     public void displayRoundStart() {
         System.out.println("\n" + ConsoleColors.BOLD + ConsoleColors.YELLOW + "●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  THE GAME BEGINS  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●"
@@ -102,7 +132,7 @@ public class GameView {
         Set<String> absorbed = board.getAbsorbedCells();
         int bhRow = board.getBhRow();
 
-        System.out.println("\n" + ConsoleColors.BOLD +ConsoleColors.BLACK_ON_LAVENDER_PASTEL+ "                                               CURRENT BOARD                                              " + ConsoleColors.RESET);
+        System.out.println("\n" + ConsoleColors.BOLD +ConsoleColors.BLACK_ON_LAVENDER_PASTEL+ "                                               CURRENT BOARD                                               " + ConsoleColors.RESET);
         System.out.println("");
         for (int i = 0; i < rows; i++) {
             System.out.printf("Row %-2d ", i + 1);
@@ -110,60 +140,12 @@ public class GameView {
             for (int j = 0; j <= i; j++) {
                 // CHANGE: Ask the board for the specific cell content here
                 String cellContent = board.getCell(i, j);
-
+                
                 System.out.print(formatCell(i, j, cellContent, absorbed, bhRow));
             }
             System.out.println("\n");
         }
     }
-
-    //Game Ends
-    public void displayRoundOver() {
-        System.out.println("\n" + ConsoleColors.BOLD + ConsoleColors.SKY_BLUE
-                + "●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●    GAME FINISHED   ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●" + ConsoleColors.RESET );
-        System.out.println("");
-    }
-
-    //Scoreboard
-    public void displayWinner(List<Player> winners) {
-        if (winners.size() > 1) {
-            System.out.println("\n" + ConsoleColors.BOLD + ConsoleColors.SKY_BLUE
-                    + "╔═════════════════════════════════════════════════════════════════════════════════════════════════════════╗");
-            System.out.print("║                                      " +ConsoleColors.BOLD+ "\u001B[7m" + "  🤝 IT'S A DRAW BETWEEN: ");
-            for (int i = 0; i < winners.size(); i++) {
-                System.out.print(winners.get(i).getName() + (i < winners.size() - 1 ? ", " : ""));
-            }
-            System.out.println("  🤝  " + ConsoleColors.RESET + ConsoleColors.SKY_BLUE + "                                      ║\n"
-                    + "╚═════════════════════════════════════════════════════════════════════════════════════════════════════════╝" + ConsoleColors.RESET);
-        } else {
-            Player winner = winners.get(0);
-     String winColor = ConsoleColors.getPlayerColor(winner.getId());
-
-System.out.println("\n" + winColor +
-        "╔═════════════════════════════════════════════════════════════════════════════════════════════════════════╗");
-System.out.println("║                                                                                                         ║");
-System.out.println("║                                      " +ConsoleColors.BOLD+ "\u001B[7m" + " 🏆 PLAYER " + winner.getName() + " WINS THE GAME!! 🏆 " + ConsoleColors.RESET + winColor + "                                     ║");
-System.out.println("║                                                                                                         ║");
-System.out.println("╚═════════════════════════════════════════════════════════════════════════════════════════════════════════╝" + ConsoleColors.RESET);
-
-        }
-    }
-
-    //Error
-    public void displayError(String msg) {
-        System.out.println(ConsoleColors.BOLD+ ConsoleColors.RED + "   ❌ " + msg + ConsoleColors.RESET);
-    }
-
-    public void displayTurn(Player p, String label) {
-        String color = ConsoleColors.BOLD + ConsoleColors.getPlayerColor(p.getId());
-        System.out.println("Player " + color + p.getName() + ConsoleColors.RESET +" is placing: " + color + "● (" + label + ")" + ConsoleColors.RESET);
-    }
-
-    //Black hole formed
-    public void displayBlackHoleMessage(String msg) {
-        System.out.println(ConsoleColors.BOLD + ConsoleColors.BLACK_HOLE+ msg+ ConsoleColors.RESET);
-    }
-    
     
     //Black Hole Formed - Last Current Board
     private String formatCell(int r, int c, String content, Set<String> absorbed, int bhRow) {
@@ -177,11 +159,16 @@ System.out.println("╚═══════════════════
         if (bhRow != -1) {
             color = absorbed.contains(r + "," + c) ? ConsoleColors.BOLD + ConsoleColors.getPlayerColor(pIdx)
                     : ConsoleColors.BOLD + ConsoleColors.WHITE;
-        } else {
+        } else {        
             color = ConsoleColors.BOLD + ConsoleColors.getPlayerColor(pIdx);
-        }
+        }    
         String inner = content.length() == 2 ? " " + content + " " : " " + content;
         return color + " ◖" + inner + "◗ " + ConsoleColors.RESET;
+    }    
+    
+    //Black hole formed
+    public void displayBlackHoleMessage(String msg) {
+        System.out.println(ConsoleColors.BOLD + ConsoleColors.BLACK_HOLE+ msg+ ConsoleColors.RESET);
     }
 
     //ScoreBoard
@@ -193,10 +180,55 @@ System.out.println("╚═══════════════════
             int sum = list.stream().mapToInt(Integer::intValue).sum();
             String color = ConsoleColors.getPlayerColor(p.getId());
             System.out.println("Player " + color + p.getName() + ConsoleColors.RESET + " : " + list + " = " + sum);
-        }
-    }
+        }    
+    }    
+
+    //Wins
+    public void displayWinner(List<Player> winners) {
+
+        if (winners.size() > 1) {
+            System.out.println("\n" + ConsoleColors.BOLD + ConsoleColors.SKY_BLUE
+                    + "╔═════════════════════════════════════════════════════════════════════════════════════════════════════════╗");
+            System.out.print("║                                      " +ConsoleColors.BOLD+ "\u001B[7m" + "  🤝 IT'S A DRAW BETWEEN: ");        
+            for (int i = 0; i < winners.size(); i++) {
+                System.out.print(winners.get(i).getName() + (i < winners.size() - 1 ? ", " : ""));
+            }    
+            System.out.println("  🤝  " + ConsoleColors.RESET + ConsoleColors.SKY_BLUE + "                                      ║\n"
+                    + "╚═════════════════════════════════════════════════════════════════════════════════════════════════════════╝" + ConsoleColors.RESET);
+        }             
+
+        else {
+            Player winner = winners.get(0);
+            String winColor = ConsoleColors.getPlayerColor(winner.getId());
+            
+            System.out.println("\n" + winColor +
+            "╔═════════════════════════════════════════════════════════════════════════════════════════════════════════╗");
+            System.out.println("║                                                                                                         ║");
+            System.out.println("║                                      " +ConsoleColors.BOLD+ "\u001B[7m" + " 🏆 PLAYER " + winner.getName() + " WINS THE GAME!! 🏆 " + ConsoleColors.RESET + winColor + "                                     ║");
+            System.out.println("║                                                                                                         ║");
+            System.out.println("╚═════════════════════════════════════════════════════════════════════════════════════════════════════════╝" + ConsoleColors.RESET);
+        }    
+    }    
+
+    //Game Ends
+    public void displayRoundOver() {
+        System.out.println("\n" + ConsoleColors.BOLD + ConsoleColors.SKY_BLUE
+                + "●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●   GAME FINISHED   ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●" + ConsoleColors.RESET );
+        System.out.println("");        
+    }    
+
+    //Error
+    public void displayError(String msg) {
+        System.out.println(ConsoleColors.BOLD+ ConsoleColors.RED + "   ❌ " + msg + ConsoleColors.RESET);
+    }    
+
+    public void displayTurn(Player p, String label) {
+        String color = ConsoleColors.BOLD + ConsoleColors.getPlayerColor(p.getId());
+        System.out.println("Player " + color + p.getName() + ConsoleColors.RESET +" is placing: " + color + "● (" + label + ")" + ConsoleColors.RESET);
+    }    
 
 
+    //Displaying error for non numeric value
     public int getInt(String msg) {
         display(msg);
         while (true) {
@@ -214,7 +246,8 @@ System.out.println("╚═══════════════════
     //Play again ?
     public boolean askToPlayAgain() {
         while (true) {
-            System.out.println(ConsoleColors.BOLD+ ConsoleColors.BLACK_ON_GREEN +" Would you like to play another round? (Y/N):"+ ConsoleColors.RESET);
+            System.out.print(ConsoleColors.BOLD+ ConsoleColors.BLACK_ON_GREEN +" Would you like to play another round? (Y/N):"+ ConsoleColors.RESET);
+            System.out.print("  ");
             String input = sc.next().trim().toUpperCase();
             try {
                 if (!input.equals("Y") && !input.equals("N")) {
@@ -228,57 +261,37 @@ System.out.println("╚═══════════════════
         }
     }
 
-    //Display after Yes and No
-    public void displayAfterYesorNO(String msg) {
-        System.out.println(ConsoleColors.BOLD + ConsoleColors.BLACK_ON_LAVENDER_PASTEL + msg + ConsoleColors.RESET);
-    }
-    
-    public void displayStatus(String msg) {
-    	System.out.println(ConsoleColors.BOLD + ConsoleColors.BLACK_ON_LAVENDER_PASTEL + msg + ConsoleColors.RESET);
-    }
-    
     //Thank you message
     public void displayExitMessage() {
-    	displayStatus("                        Thank you for playing BLACK HOLE! ● See you next time! ●                          " );
+        System.out.println();
+    	displayStatus("                        Thank you for playing BLACK HOLE! ● See you next time! ●                           " );
+        System.out.println();
     }
     
     // Reset Message
     public void displayResetMessage() {
+        System.out.println();
     	displayStatus("                           ♻️ Resetting board... Getting ready for a New Game!                             ");
 
     }
+
+    //-----------------------------------------------------------------------------------------------------------------------------------
+
+    //Display after Yes and No
+    public void displayAfterYesOrNO(String msg) {
+        System.out.println(ConsoleColors.BOLD + ConsoleColors.BLACK_ON_LAVENDER_PASTEL + msg + ConsoleColors.RESET);
+    }
     
+    //Display after Yes and No
+    public void displayStatus(String msg) {
+    	System.out.println(ConsoleColors.BOLD + ConsoleColors.BLACK_ON_LAVENDER_PASTEL + msg + ConsoleColors.RESET);
+    }
+    
+
+    //Display
     public void display(String msg) {
     	System.out.println();
         System.out.println(ConsoleColors.BOLD + msg + ConsoleColors.RESET);
-    }
-    
-    public int getNumberOfUsers() {
-        int users;
-        while (true) {
-            System.out.print(ConsoleColors.BOLD + ConsoleColors.WHITE_ON_SOFT_YELLOW
-                    + " Enter Number of Users (1-5): " + ConsoleColors.RESET);
-            String input = sc.next();
-            try {
-                users = Integer.parseInt(input);
-                if (users >= 1 && users <= 5) {
-                    return users;
-                }
-                // Logic Error (not a parsing error), so we print manually
-                displayError("Please enter a number between 1 and 5.");
-                
-            } catch (NumberFormatException e) {
-                // Parsing Error
-                displayError("'" + input + "' is not a number! Please enter a valid numeric value.");
-            }
-        }
-    }
-
-    // Display max number note
-    public void displayMaxNumberNote(int maxNum) {
-        display("\n" + ConsoleColors.RED
-                + "           Note: In this game, players will enter numbers from 1 to " + maxNum
-                + " one by one during play.           " + ConsoleColors.RESET);
     }
     
 }

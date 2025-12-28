@@ -59,7 +59,7 @@ public class GameView {
             String input = sc.next();
             try {
                 users = Integer.parseInt(input);
-                if (users < 1 && users > 5) {
+                if (users < 1 || users > 5) {
                 	throw new InvalidPlayerCountException("Please enter a number between 1 and 5.");
                 }
                 return users;

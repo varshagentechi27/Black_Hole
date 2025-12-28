@@ -12,7 +12,7 @@ public interface Board {
     void placeBlackHole();
     
     // Scoring logic
-    Map<String, List<Integer>> calculateScores();
+    Map<String, List<Integer>> mapAbsorbedValuesToPlayers();
     
     // Methods needed for the View to display the board
     String getCell(int r, int c);

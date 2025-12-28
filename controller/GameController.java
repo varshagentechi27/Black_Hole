@@ -84,9 +84,7 @@ public class GameController {
 		// Black Hole Formation
 		state.getBoard().placeBlackHole();
 		view.displayBoard(state.getBoard());
-		System.out.println();
 		view.displayBlackHoleMessage();
-
 		processFinalResults(state);
 	}
 
@@ -139,8 +137,8 @@ public class GameController {
 	// Scoring
 	private void processFinalResults(GameState state) {
 
-		// scores calculation based on tokens adjacent to the Black Hole
-		Map<String, List<Integer>> scoreMap = state.getBoard().calculateScores();
+		// Maps each player identifier to the list of numeric values from adjacent non-BH cells
+		Map<String, List<Integer>> scoreMap = state.getBoard().mapAbsorbedValuesToPlayers();
 
 		// Accumulate scores for each player
 		for (Player p : state.getPlayers()) {

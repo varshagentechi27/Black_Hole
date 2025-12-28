@@ -125,9 +125,9 @@ public class CenteredTriangleBoard implements Board {
 		}
 	}
 
-	// Sums up the values of all tokens directly adjacent to the Black Hole.
+	// Groups numeric values of adjacent non-BH cells by player for scoring
 	@Override
-	public Map<String, List<Integer>> calculateScores() {
+	public Map<String, List<Integer>> mapAbsorbedValuesToPlayers() {
 		Map<String, List<Integer>> map = new HashMap<>();
 		int[][] adj = { { bhRow, bhCol - 1 }, { bhRow, bhCol + 1 }, { bhRow - 1, bhCol - 1 }, { bhRow - 1, bhCol },
 				{ bhRow + 1, bhCol }, { bhRow + 1, bhCol + 1 } };

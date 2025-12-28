@@ -13,7 +13,7 @@ public class GameView {
 
     //welcome to game
     public void welcome() {
-        System.out.println("");
+        System.out.println();
         System.out.println(ConsoleColors.BOLD + ConsoleColors.BLACK_HOLE
                 + "==========================================================================================================="+ConsoleColors.RESET);
         System.out
@@ -21,7 +21,7 @@ public class GameView {
         System.out
                 .println(ConsoleColors.BOLD + ConsoleColors.BLACK_HOLE+"==========================================================================================================="
                         + ConsoleColors.RESET);
-        System.out.println("");
+        System.out.println();
         howToPlay();
     }
 
@@ -30,7 +30,7 @@ public class GameView {
     private void howToPlay() {
         System.out.println(ConsoleColors.BOLD + ConsoleColors.WHITE_ON_WATERMELON_RED
                 + "                                              HOW TO PLAY?                                                 " + ConsoleColors.RESET);
-        System.out.println("");
+        System.out.println();
         System.out.println(ConsoleColors.WHITE + "1. The board is a " + ConsoleColors.PURPLE + "Centered Triangle"
                 + ConsoleColors.RESET + " of empty circles " + ConsoleColors.WHITE + "(◯).");
         System.out.println("2. Players take turns placing numbered tokens (e.g., " + ConsoleColors.FLAMINGO_PINK + "A1, "+ConsoleColors.GOLDEN_YELLOW+
@@ -77,7 +77,7 @@ public class GameView {
     }
         // Color Legend
         public void displayLegend() {
-            System.out.println("");
+            System.out.println();
             System.out.println(ConsoleColors.BOLD + ConsoleColors.BLACK_ON_ORANGE
                     + "                                               COLOR LEGEND                                                "+ ConsoleColors.RESET+"\n");
             System.out.println("    ◯     : Empty Cell (Available for placement)");
@@ -95,7 +95,7 @@ public class GameView {
     public void displayGuide(int rows) {
         System.out.println(ConsoleColors.BOLD + ConsoleColors.BLACK_ON_ORANGE
                 + "                                     POSITION GUIDE [ROW, POSITION]                                        " + ConsoleColors.RESET);
-        System.out.println("");
+        System.out.println();
         for (int i = 0; i < rows; i++) {
             System.out.printf("Row %-2d  ", i + 1);
             System.out.print(" ".repeat((rows - i - 1) * 4));
@@ -110,7 +110,7 @@ public class GameView {
     public void displayPlayerList(List<Player> players) {
         System.out.println(ConsoleColors.BOLD + ConsoleColors.BLACK_ON_ORANGE
             + "                                           PARTICIPATING PLAYERS                                           "+ ConsoleColors.RESET);
-            System.out.println("");
+            System.out.println();
             for (Player p : players) {
                 String color = ConsoleColors.BOLD + ConsoleColors.getPlayerColor(p.getId());
                 String type = (p instanceof ComputerPlayer) ? " (Computer)" : " ";
@@ -139,7 +139,7 @@ public class GameView {
         int bhRow = board.getBhRow();
 
         System.out.println("\n" + ConsoleColors.BOLD +ConsoleColors.BLACK_ON_LAVENDER_PASTEL+ "                                               CURRENT BOARD                                               " + ConsoleColors.RESET);
-        System.out.println("");
+        System.out.println();
         for (int i = 0; i < rows; i++) {
             System.out.printf("Row %-2d ", i + 1);
             System.out.print(" ".repeat((rows - i - 1) * 4));
@@ -180,7 +180,7 @@ public class GameView {
     //ScoreBoard
     public void displayScoreboard(List<Player> players, Map<String, List<Integer>> scoreMap) {
         System.out.println("\n" + ConsoleColors.BOLD + ConsoleColors.WHITE_ON_WATERMELON_RED + "                                          FINAL SCOREBOARD                                                 "+ConsoleColors.RESET);
-        System.out.println("");
+        System.out.println();
         for (Player p : players) {
             List<Integer> list = scoreMap.getOrDefault(p.getName(), List.of());
             int sum = list.stream().mapToInt(Integer::intValue).sum();
@@ -220,7 +220,7 @@ public class GameView {
     public void displayRoundOver() {
         System.out.println("\n" + ConsoleColors.BOLD + ConsoleColors.SKY_BLUE
                 + "●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●   GAME FINISHED   ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●" + ConsoleColors.RESET );
-        System.out.println("");        
+        System.out.println();        
     }    
 
     //Error
@@ -278,6 +278,7 @@ public class GameView {
     public void displayResetMessage() {
         System.out.println();
     	displayStatus("                           ♻️ Resetting board... Getting ready for a New Game!                             ");
+    	System.out.println();
 
     }
 

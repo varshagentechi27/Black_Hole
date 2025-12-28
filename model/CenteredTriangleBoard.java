@@ -54,12 +54,13 @@ public class CenteredTriangleBoard implements Board {
 		return moves;
 	}
 
-//	Checks if a position is on the outer boundary, used by Computer for strategic placement
+   // Checks if a position is on the outer boundary, used by Computer for strategic placement
 	@Override
 	public boolean isEdge(int r, int c) {
 		return r == 0 || r == rows - 1 || c == 0 || c == r;
 	}
 
+	// Checks if row is full
 	@Override
 	public boolean isRowFull(int r) {
 		if (r < 0 || r >= rows)
@@ -71,6 +72,7 @@ public class CenteredTriangleBoard implements Board {
 		return true;
 	}
 
+	// validating row provided by player
 	@Override
 	public void validateRow(int r) throws InvalidMoveException {
 		if (r < 0 || r >= rows) {
@@ -80,10 +82,8 @@ public class CenteredTriangleBoard implements Board {
 
 	@Override
 	public void place(int r, int c, String val) throws InvalidMoveException, OccupiedCellException {
-
-		// column cannot exceed row index or negative
+		// validating position provided by player, column cannot exceed row index or negative
 		if (c < 0 || c > r) {
-//             throw new InvalidMoveException("Invalid Position! For Row " + (r + 1) + ", please enter a position from 1 to " + (r + 1) + ".");
 			throw new InvalidMoveException(
 					"Invalid Position! Please refer to the Position Guide above for valid Positions.");
 
@@ -98,6 +98,7 @@ public class CenteredTriangleBoard implements Board {
 		board[r][c] = val;
 	}
 
+	// True if only one empty cell left
 	@Override
 	public boolean hasOneEmptyLeft() {
 		int empty = 0;
@@ -142,6 +143,7 @@ public class CenteredTriangleBoard implements Board {
 		return map;
 	}
 
+	//check whether r,c are valid
 	private boolean valid(int r, int c) {
 		return r >= 0 && r < rows && c >= 0 && c <= r;
 	}

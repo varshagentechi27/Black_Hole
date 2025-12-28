@@ -85,8 +85,7 @@ public class GameController {
 		state.getBoard().placeBlackHole();
 		view.displayBoard(state.getBoard());
 		System.out.println();
-		view.displayBlackHoleMessage(
-				"●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  THE BLACK HOLE HAS FORMED  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ● ");
+		view.displayBlackHoleMessage();
 
 		processFinalResults(state);
 	}
@@ -112,7 +111,7 @@ public class GameController {
 		}
 	}
 
-	// Computer: Prioritizes edge moves to minimize risk
+	// Computer - Prioritizes edge moves to minimize risk
 	private void autoMove(Board board, String label) {
 		List<int[]> availableMoves = board.getAvailableMoves();
 		if (availableMoves.isEmpty())
